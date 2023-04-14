@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WinFormsApp4
 {
-    internal class subjects
+    public class subjects
     {
         public string Id { get => id; set => id = value; }
 

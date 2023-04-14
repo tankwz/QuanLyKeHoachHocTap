@@ -17,6 +17,7 @@ using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
 using static System.Net.WebRequestMethods;
 using static System.Windows.Forms.AxHost;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace WinFormsApp4
 {
@@ -54,7 +55,6 @@ namespace WinFormsApp4
                 int countz = 1;
                 foreach (var s in filteredList)
                 {
-
                     s.Order = countz;
                     countz++;
                 }
@@ -91,37 +91,24 @@ namespace WinFormsApp4
                 dataGridView.Columns["Marktext"].Width = 80;
                 dataGridView.Columns["Mark"].Width = 80;
                 dataGridView.Columns["Get"].Width = 70;
-                //  dataGridView.Dock = DockStyle.Fill;
                 dataGridView.Location = new Point(dataGridView.Location.X + 180, dataGridView.Location.Y + 25);
-
-                //  dataGridView.AutoSizeColumnsMode= DataGridViewAutoSizeColumnsMode.AllCells;
-                //  dataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
                 dataGridView.Width = 1000;
                 dataGridView.DataSource = filteredList;
                 dataGridView.BackgroundColor = Color.White;
                 dataGridView.BorderStyle = BorderStyle.None;
-
                 var heightt = 40;
                 foreach (var sj in filteredList)
                 {
                     heightt += 28;
                 }
-
                 dataGridView.Height = heightt;
                 panel.Height = heightt + 50;
                 panel.Controls.Add(dataGridView);
                 panel.Controls.Add(label);
                 flowLayoutPanel1.Controls.Add(panel);
-
-
             }
         }
 
-        private void checkpre()
-        {
-            string pre = "";
-
-        }
 
         private int addPanel1(int p, subjects[] subject)
         {
@@ -139,19 +126,19 @@ namespace WinFormsApp4
             dataGridView.DefaultCellStyle.Font = new Font("Segoe UI", 10);
             dataGridView.AutoGenerateColumns = false;
             // Add "Stt" column
+            /*
             dataGridView.Columns.Add("Stt", "Stt");
             dataGridView.Columns["Stt"].DataPropertyName = "Order";
             dataGridView.Columns["Stt"].Width = 50;
+            */
             // Add "Id" column as ComboBox
             // Add "Name" column as ComboBox
             DataGridViewComboBoxColumn nameColumn = new DataGridViewComboBoxColumn();
             nameColumn.Name = "Name";
             nameColumn.HeaderText = "Tên học phần";
-           // nameColumn.DisplayMember = "Name";
-         //   nameColumn.ValueMember = "Name";
             nameColumn.DataPropertyName = "Name";
             nameColumn.Width = 400;
-            var source1 = subject.Where(s => (s.Mandatory != "0") && (s.Done == 0)).Select(s => new { IdName = $"{s.Id} - {s.Name}", s.Name, s.Credits, s.Prerequisite, s.Mandatory ,s.Groupz,s.Done }).Distinct().ToList();
+            var source1 = subject.Where(s => (s.Mandatory != "0") && ((s.Done == 0) || (s.Done == totalhk))).Select(s => new { IdName = $"{s.Id} - {s.Name}", s.Id, s.Name, s.Credits, s.Prerequisite, s.Mandatory, s.Groupz, s.Done }).Distinct().ToList();
             nameColumn.DataSource = source1;
             nameColumn.DisplayMember = "IdName";
             nameColumn.ValueMember = "Name";
@@ -163,14 +150,17 @@ namespace WinFormsApp4
             dataGridView.Columns.Add("Prerequisite", "Tiên quyết");
             dataGridView.Columns.Add("Groupz", "Nhóm");
             dataGridView.Columns.Add("Mandatory", "Bắt buộc");
+            dataGridView.Columns.Add("Done", "Done");
             dataGridView.Columns["Credits"].DataPropertyName = "Credits";
             dataGridView.Columns["Prerequisite"].DataPropertyName = "Prerequisite";
             dataGridView.Columns["Groupz"].DataPropertyName = "Groupz";
             dataGridView.Columns["Mandatory"].DataPropertyName = "Mandatory";
-            dataGridView.Columns["Credits"].Width =50;
+            dataGridView.Columns["Done"].DataPropertyName = "Done";
+            dataGridView.Columns["Credits"].Width = 50;
             dataGridView.Columns["Prerequisite"].Width = 120;
             dataGridView.Columns["Groupz"].Width = 120;
             dataGridView.Columns["Mandatory"].Width = 50;
+            dataGridView.Columns["Done"].Width = 50;
             dataGridView.Location = new Point(dataGridView.Location.X + 180, dataGridView.Location.Y + 25);
             dataGridView.Width = 1000;
             dataGridView.BackgroundColor = Color.White;
@@ -181,12 +171,122 @@ namespace WinFormsApp4
             panel.Controls.Add(dataGridView);
             panel.Controls.Add(label);
             flowLayoutPanel1.Controls.Add(panel);
-            dataGridView.CellEndEdit += new DataGridViewCellEventHandler(dataGridView_CellEndEdit);
+
+            foreach (subjects sj in subject)
+            {
+                if (sj.Done == totalhk)
+                {
+                    DataGridViewRow row = new DataGridViewRow();
+                    DataGridViewComboBoxCell nameCell = new DataGridViewComboBoxCell();
+                    nameCell.DataSource = source1;
+                    nameCell.DisplayMember = "IdName";
+                    nameCell.ValueMember = "IdName";
+                    if (source1.Any(s => s.IdName == $"{sj.Id} - {sj.Name}"))
+                    {
+                        var selectedItem = source1.FirstOrDefault(s => s.IdName == $"{sj.Id} - {sj.Name}");
+                        nameCell.Value = $"{sj.Id} - {sj.Name}";
+
+                        // source1.Remove(selectedItem);
+                    }
+                    else
+                    {
+                        // The value is not present in the ComboBox's DataSource, handle it here
+                        nameCell.Value = null;
+                        MessageBox.Show("Value is not valid for this cell.");
+                    }
+                    row.Cells.Add(nameCell);
+                    row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Credits });
+                    row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Prerequisite });
+                    row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Groupz });
+                    row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Mandatory });
+                    row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Done });
+                    dataGridView.Rows.Add(row);
+                    dataGridView.CellValueChanged += new DataGridViewCellEventHandler(dataGridView_CellValueChanged);
+                    dataGridView.EditingControlShowing += (sender, e) =>
+                    {
+
+                        dataGridView.CellEndEdit += new DataGridViewCellEventHandler(dataGridView_CellValueChanged);
+                    };
+                }
+            }
+
+            dataGridView.CellEndEdit += new DataGridViewCellEventHandler(dataGridView_CellValueChanged);
+            dataGridView.DataError += new DataGridViewDataErrorEventHandler(dataGridView_DataError);
+
             return p;
         }
         subjects[] subject;
 
-        private void dataGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        private void dataGridView_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            if (e.Exception is FormatException)
+            {
+                // Handle the value not valid error here
+                MessageBox.Show("Value is not valid for this cell.");
+                e.ThrowException = false;
+            }
+        }
+        /*
+        private void dataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            int check = 1;
+            var dataGridView = (DataGridView)sender;
+            if (e.ColumnIndex == dataGridView.Columns["Name"].Index)
+            {
+                DataGridViewComboBoxCell cell = dataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex] as DataGridViewComboBoxCell;
+                if (cell.Value != null)
+                {
+                    string selectedName = cell.Value.ToString();
+                    subjects selectedSubject = subject.FirstOrDefault(s => s.Name == selectedName);
+                    if (selectedSubject != null)
+                    {
+                        dataGridView.Rows[e.RowIndex].Cells["Credits"].Value = selectedSubject.Credits;
+                        dataGridView.Rows[e.RowIndex].Cells["Prerequisite"].Value = selectedSubject.Prerequisite;
+                        dataGridView.Rows[e.RowIndex].Cells["Groupz"].Value = selectedSubject.Groupz;
+                        dataGridView.Rows[e.RowIndex].Cells["Mandatory"].Value = selectedSubject.Mandatory;
+                        dataGridView.Rows[e.RowIndex].Cells["Done"].Value = selectedSubject.Done;
+                        //DataGridViewTextBoxCell otherCelldone = row.Cells["Done"] as DataGridViewTextBoxCell;
+   
+                        string[] prerequisites = selectedSubject.Prerequisite.Split(',');
+                        string unsatisfiedPrerequisites = "";
+                        foreach (string prerequisite in prerequisites)
+                        {
+                            if (!string.IsNullOrEmpty(prerequisite))
+                            {
+                                string prerequisiteId = prerequisite.Trim();
+                                subjects prerequisiteSubject = subject.FirstOrDefault(s => s.Id == prerequisiteId);
+                                if (prerequisiteSubject != null && prerequisiteSubject.Done == 0)
+                                {
+                                    unsatisfiedPrerequisites += string.Format("{0} - {1}\n", prerequisiteId, prerequisiteSubject.Name);
+                                }
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(unsatisfiedPrerequisites))
+                        {
+                            cell.Value = null;
+                            dataGridView.Rows[e.RowIndex].Cells["Credits"].Value = null;
+                            dataGridView.Rows[e.RowIndex].Cells["Prerequisite"].Value = null;
+                            dataGridView.Rows[e.RowIndex].Cells["Groupz"].Value = null;
+                            dataGridView.Rows[e.RowIndex].Cells["Mandatory"].Value = null;
+                            MessageBox.Show(string.Format("Môn học {0} - {1} chưa đáp ứng điều kiện tiên quyết:\n{2}",
+                                        selectedSubject.Id, selectedSubject.Name, unsatisfiedPrerequisites));
+                        }
+                    }
+                    
+
+                    foreach (subjects sj in subject)
+                    {
+                        if (selectedSubject.Name == sj.Name) { sj.Done = totalhk; }
+                    }
+                }
+            }
+        }
+      */
+
+
+        private string prevSelectedSubjectName = "";
+
+        private void dataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             var dataGridView = (DataGridView)sender;
             if (e.ColumnIndex == dataGridView.Columns["Name"].Index)
@@ -202,32 +302,59 @@ namespace WinFormsApp4
                         dataGridView.Rows[e.RowIndex].Cells["Prerequisite"].Value = selectedSubject.Prerequisite;
                         dataGridView.Rows[e.RowIndex].Cells["Groupz"].Value = selectedSubject.Groupz;
                         dataGridView.Rows[e.RowIndex].Cells["Mandatory"].Value = selectedSubject.Mandatory;
-                        foreach (subjects sj in subject)
-                        {
-                            if (selectedSubject.Name == sj.Name) { sj.Done = totalhk; }
-                        }
+                        dataGridView.Rows[e.RowIndex].Cells["Done"].Value = selectedSubject.Done;
+
                         foreach (DataGridViewRow row in dataGridView.Rows)
                         {
-                            if (row.Index != e.RowIndex)
+                            if (row.Index == e.RowIndex)
                             {
-                                DataGridViewComboBoxCell otherCell = row.Cells["Name"] as DataGridViewComboBoxCell;
-                                if (otherCell != null && otherCell.Value != null)
+                                DataGridViewTextBoxCell otherCelldone = row.Cells["Done"] as DataGridViewTextBoxCell;
+                                if (otherCelldone != null && otherCelldone.Value != null)
                                 {
-                                    if (otherCell.Value.ToString() == selectedName)
+                                    if (int.Parse(otherCelldone.Value.ToString()) == totalhk)
                                     {
+                                        MessageBox.Show(otherCelldone.Value.ToString() + totalhk.ToString());
                                         cell.Value = null;
                                         dataGridView.Rows[e.RowIndex].Cells["Credits"].Value = null;
                                         dataGridView.Rows[e.RowIndex].Cells["Prerequisite"].Value = null;
                                         dataGridView.Rows[e.RowIndex].Cells["Groupz"].Value = null;
                                         dataGridView.Rows[e.RowIndex].Cells["Mandatory"].Value = null;
-                                        MessageBox.Show("Lưu ý","Môn học này đã được chọn");
+                                        MessageBox.Show("Môn học này đã được chọn", "Lưu ý");
+                                        break;
+                                    }
+                                }
+                            }
+                            if (row.Index != e.RowIndex)
+                            {
+                                DataGridViewComboBoxCell otherCell = row.Cells["Name"] as DataGridViewComboBoxCell;
+
+                                if (otherCell != null && otherCell.Value != null)
+                                {
+                                    if (otherCell.Value.ToString() == selectedName)
+                                    {
+
+                                        cell.Value = null;
+                                        dataGridView.Rows[e.RowIndex].Cells["Credits"].Value = null;
+                                        dataGridView.Rows[e.RowIndex].Cells["Prerequisite"].Value = null;
+                                        dataGridView.Rows[e.RowIndex].Cells["Groupz"].Value = null;
+                                        dataGridView.Rows[e.RowIndex].Cells["Mandatory"].Value = null;
+                                        MessageBox.Show("Môn học này đã được chọn", "Lưu ý");
                                         break;
                                     }
                                 }
                             }
                         }
 
-
+                        if (prevSelectedSubjectName != selectedName)
+                        {
+                            // set sj.Done of previous subject to 0
+                            subjects prevSelectedSubject = subject.FirstOrDefault(s => s.Name == prevSelectedSubjectName);
+                            if (prevSelectedSubject != null)
+                            {
+                                prevSelectedSubject.Done = 0;
+                            }
+                            prevSelectedSubjectName = selectedName;
+                        }
                         string[] prerequisites = selectedSubject.Prerequisite.Split(',');
                         string unsatisfiedPrerequisites = "";
                         foreach (string prerequisite in prerequisites)
@@ -236,27 +363,31 @@ namespace WinFormsApp4
                             {
                                 string prerequisiteId = prerequisite.Trim();
                                 subjects prerequisiteSubject = subject.FirstOrDefault(s => s.Id == prerequisiteId);
-                                if (prerequisiteSubject != null && prerequisiteSubject.Done != 1)
+                                if (prerequisiteSubject != null && prerequisiteSubject.Done == 0)
                                 {
                                     unsatisfiedPrerequisites += string.Format("{0} - {1}\n", prerequisiteId, prerequisiteSubject.Name);
                                 }
                             }
                         }
-
                         if (!string.IsNullOrEmpty(unsatisfiedPrerequisites))
                         {
-                            MessageBox.Show(string.Format("{0} - {1} has prerequisites that are not satisfied:\n{2}",
+                            cell.Value = null;
+                            dataGridView.Rows[e.RowIndex].Cells["Credits"].Value = null;
+                            dataGridView.Rows[e.RowIndex].Cells["Prerequisite"].Value = null;
+                            dataGridView.Rows[e.RowIndex].Cells["Groupz"].Value = null;
+                            dataGridView.Rows[e.RowIndex].Cells["Mandatory"].Value = null;
+                            MessageBox.Show(string.Format("Môn học {0} - {1} chưa đáp ứng điều kiện tiên quyết:\n{2}",
                                         selectedSubject.Id, selectedSubject.Name, unsatisfiedPrerequisites));
                         }
-
-
+                        else
+                        {
+                            selectedSubject.Done = totalhk;
+                            MessageBox.Show(selectedSubject.Done.ToString());
+                        }
                     }
                 }
             }
         }
-
-
-
 
         int totalhk;
         private void button1_Click(object sender, EventArgs e)
@@ -265,6 +396,8 @@ namespace WinFormsApp4
             filehtml.Filter = "Html-Files(*.html)|*.html";
             filehtml.ShowDialog(this);
             textBox1.Text = filehtml.FileName;
+            if (textBox1.Text == "")
+                return;
             string file = System.IO.File.ReadAllText(filehtml.FileName);
             studentSubjects[] studentlist0 = new studentSubjects[90];
             for (int u = 0; u < 90; ++u)
@@ -273,7 +406,7 @@ namespace WinFormsApp4
             }
             filter.gethk(file, studentlist0);
 
-             subject = DatabaseConnection.connectdata();
+            subject = DatabaseConnection.connectdata();
 
             for (int a = 0; a < studentlist0.Length; a++)
             {
@@ -296,7 +429,6 @@ namespace WinFormsApp4
                         studentlist0[a].Credits = subject[b].Credits;
                         subject[b].Done = 1;
                     }
-
                 }
             }
             for (int c = 0; c < subject.Length; c++)
@@ -329,24 +461,26 @@ namespace WinFormsApp4
                     }
                 }
             }
-            string twofirst2="";
-            for (int f=0; f< subject.Length; f++)
+            string twofirst2 = "";
+            for (int f = 0; f < subject.Length; f++)
             {
                 if (subject[f].Mandatory == "all") continue;
-                if (subject[f].Groupz.Length > 2 && (int.Parse(subject[f].Mandatory)<1))
+                if (subject[f].Groupz.Length > 2 && (int.Parse(subject[f].Mandatory) < 1))
                     twofirst2 = subject[f].Groupz.Substring(0, 2);
-                for (int g=0; g<subject.Length; g++)
+                for (int g = 0; g < subject.Length; g++)
                 {
                     if (subject[g].Groupz.Length < 2) continue;
                     if (subject[g].Groupz.Substring(0, 2) == twofirst2)
                         subject[g].Mandatory = "0";
                 }
             }
-           // dataGridView1.DataSource = filteredList;
+            // dataGridView1.DataSource = filteredList;
             addPanel(Int32.Parse(studentlist0[0].Name), studentlist0);
             totalhk = Int32.Parse(studentlist0[0].Name);
-
+            // MessageBox.Show("first" + totalhk);
         }
+
+
 
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -412,15 +546,29 @@ namespace WinFormsApp4
 
         private void button2_Click(object sender, EventArgs e)
         {
+            them();
+        }
 
+        private void them()
+        {
+            totalhk++;
             addPanel1(totalhk, subject);
             flowLayoutPanel1.AutoScrollPosition = new Point(0, int.MaxValue);
-            totalhk++;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            totalhk = totalhk - 1;
+            xoa();
+            foreach (subjects sj in subject)
+            {
+                if (sj.Done == totalhk + 1)
+                {
+                    sj.Done = 0;
+                }
+            }
+        }
+        private void xoa()
+        {
             string panelNameToRemove = "panelz" + totalhk;
             Control panelToRemove = flowLayoutPanel1.Controls.Find(panelNameToRemove, false).FirstOrDefault();
             if (panelToRemove != null)
@@ -428,48 +576,75 @@ namespace WinFormsApp4
                 flowLayoutPanel1.Controls.Remove(panelToRemove);
                 panelToRemove.Dispose();
             }
-            foreach (subjects sj in subject)
+
+            totalhk--;
+
+        }
+
+        List<string> selectedSubjects;
+        private void button4_Click(object sender, EventArgs e)
+        {
+
+
+        }
+
+        private void Thp_SelectedSubjectsSelected(object sender, List<string> selectedSubjects)
+        {
+            foreach (string st in selectedSubjects)
             {
-                if (sj.Done == totalhk)
+                foreach (subjects sj in subject)
                 {
-                    sj.Done = 0;
+                    if (sj.Id == st)
+                    {
+                        // MessageBox.Show(sj.Id);
+                        sj.Done = totalhk;
+                    }
+                }
+            }
+            xoa();
+            them();
+        }
+
+        /*
+
+        private void SetSelectedSubjectsInDataGridView(DataGridView dataGridView, List<string> selectedSubjects)
+        {
+            foreach (DataGridViewRow row in dataGridView.Rows)
+            {
+                var idCell = row.Cells["Name"];
+                if (idCell != null && idCell.Value != null && selectedSubjects.Contains(idCell.Value.ToString().Substring(0,5)))
+                {
+                    var nameCell = row.Cells["Name"];
+                    if (nameCell != null && nameCell.Value != null)
+                    {
+                        string subjectName = nameCell.Value.ToString();
+                        nameCell.Value = subjectName;
+                    }
+                }
+            }
+        }
+        private void buttonFillComboBoxes_Click(object sender, EventArgs e)
+        {
+            foreach (Control control in flowLayoutPanel1.Controls)
+            {
+                if (control is Panel panel)
+                {
+                    var dataGridView = panel.Controls.Find("dataz", false).FirstOrDefault() as DataGridView;
+                    if (dataGridView != null)
+                    {
+                        SetSelectedSubjectsInDataGridView(dataGridView, selectedSubjects);
+                    }
                 }
             }
         }
 
-        private void button4_Click(object sender, EventArgs e)
-        {
-            
-                // Create the DataGridView and configure its properties
-                DataGridView dataGridView1 = new DataGridView();
-                dataGridView1.Dock = DockStyle.Fill;
-                dataGridView1.AutoGenerateColumns = true;
-                var filteredList2 = subject.Where(s => (s.Mandatory != "0") && (s.Done != 1)).ToArray();
-               dataGridView1.DataSource = filteredList2;
-
-                // Create a new form to display the DataGridView
-                Form form = new Form();
-                form.Text = "DataGridView Example";
-                form.Size = new Size(600, 400);
-
-                // Add the DataGridView to the form
-                form.Controls.Add(dataGridView1);
-
-                // Show the form
-                form.ShowDialog();
-            
-
-
-        }
-        private subjects[] GetData(subjects[] subject)
-        {
-
-            return subject;
-        }
+        */
 
         private void button5_Click(object sender, EventArgs e)
         {
-
+            ThemHocPhan thp = new ThemHocPhan(subject);
+            thp.SelectedSubjectsSelected += Thp_SelectedSubjectsSelected;
+            thp.Show();
         }
     }
 }

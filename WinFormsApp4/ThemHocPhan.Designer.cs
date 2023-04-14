@@ -1,8 +1,6 @@
-﻿using System.Windows.Forms;
-
-namespace WinFormsApp4
+﻿namespace WinFormsApp4
 {
-    partial class Kehoachhoctap
+    partial class ThemHocPhan
     {
         /// <summary>
         /// Required designer variable.
@@ -30,22 +28,44 @@ namespace WinFormsApp4
         /// </summary>
         private void InitializeComponent()
         {
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.button1 = new System.Windows.Forms.Button();
             this.filehtml = new System.Windows.Forms.OpenFileDialog();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.button5 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.bordera = new System.Windows.Forms.Panel();
+            this.flowLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.bordera.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.AutoScroll = true;
+            this.flowLayoutPanel1.Controls.Add(this.dataGridView1);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(5, 3);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(1335, 716);
+            this.flowLayoutPanel1.TabIndex = 6;
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(3, 3);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowHeadersWidth = 51;
+            this.dataGridView1.RowTemplate.Height = 29;
+            this.dataGridView1.Size = new System.Drawing.Size(1321, 538);
+            this.dataGridView1.TabIndex = 0;
             // 
             // button1
             // 
@@ -64,7 +84,6 @@ namespace WinFormsApp4
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(402, 27);
             this.textBox1.TabIndex = 1;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // panel1
             // 
@@ -73,12 +92,11 @@ namespace WinFormsApp4
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.textBox1);
             this.panel1.Controls.Add(this.button1);
-            this.panel1.Location = new System.Drawing.Point(6, 4);
+            this.panel1.Location = new System.Drawing.Point(5, 6);
             this.panel1.Margin = new System.Windows.Forms.Padding(20);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1572, 106);
-            this.panel1.TabIndex = 5;
-            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
+            this.panel1.TabIndex = 9;
             // 
             // textBox2
             // 
@@ -97,37 +115,25 @@ namespace WinFormsApp4
             this.label1.TabIndex = 2;
             this.label1.Text = "Kế hoạch học tập";
             // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.AutoScroll = true;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(5, 3);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1335, 716);
-            this.flowLayoutPanel1.TabIndex = 6;
-            this.flowLayoutPanel1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.flowLayoutPanel1_Scroll);
-            this.flowLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.flowLayoutPanel1_Paint);
-            this.flowLayoutPanel1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.flowLayoutPanel1_MouseWheel);
-            // 
             // panel2
             // 
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel2.Controls.Add(this.button5);
             this.panel2.Controls.Add(this.button3);
             this.panel2.Controls.Add(this.button2);
-            this.panel2.Location = new System.Drawing.Point(1357, 113);
+            this.panel2.Location = new System.Drawing.Point(1356, 115);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(221, 731);
-            this.panel2.TabIndex = 7;
-            this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
+            this.panel2.TabIndex = 10;
             // 
             // button5
             // 
             this.button5.Font = new System.Drawing.Font("Segoe UI", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.button5.Location = new System.Drawing.Point(46, 262);
+            this.button5.Location = new System.Drawing.Point(46, 280);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(142, 52);
             this.button5.TabIndex = 7;
-            this.button5.Text = "Thêm HP";
+            this.button5.Text = "Xác nhận";
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
@@ -140,7 +146,6 @@ namespace WinFormsApp4
             this.button3.TabIndex = 5;
             this.button3.Text = "Xóa HK";
             this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button2
             // 
@@ -151,33 +156,28 @@ namespace WinFormsApp4
             this.button2.TabIndex = 4;
             this.button2.Text = "Thêm HK";
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // bordera
             // 
             this.bordera.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.bordera.Controls.Add(this.flowLayoutPanel1);
-            this.bordera.Location = new System.Drawing.Point(6, 113);
+            this.bordera.Location = new System.Drawing.Point(5, 115);
             this.bordera.Name = "bordera";
             this.bordera.Size = new System.Drawing.Size(1345, 731);
-            this.bordera.TabIndex = 8;
-            this.bordera.Paint += new System.Windows.Forms.PaintEventHandler(this.bordera_Paint);
+            this.bordera.TabIndex = 11;
             // 
-            // Kehoachhoctap
+            // ThemHocPhan
             // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BackColor = System.Drawing.SystemColors.InactiveBorder;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1582, 853);
-            this.Controls.Add(this.bordera);
-            this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
-            this.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
-            this.Name = "Kehoachhoctap";
-            this.Text = "Form2";
-            this.Load += new System.EventHandler(this.Form2_Load);
+            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.bordera);
+            this.Name = "ThemHocPhan";
+            this.Text = "ThemHocPhan";
+            this.flowLayoutPanel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
@@ -188,19 +188,18 @@ namespace WinFormsApp4
 
         #endregion
 
+        private FlowLayoutPanel flowLayoutPanel1;
         private Button button1;
         private OpenFileDialog filehtml;
         private TextBox textBox1;
-
         private Panel panel1;
-        private Label label1;
-        private FlowLayoutPanel flowLayoutPanel1;
-        private Panel panel2;
         private TextBox textBox2;
-
-        private Panel bordera;
-        private Button button2;
-        private Button button3;
+        private Label label1;
+        private Panel panel2;
         private Button button5;
+        private Button button3;
+        private Button button2;
+        private Panel bordera;
+        private DataGridView dataGridView1;
     }
 }
