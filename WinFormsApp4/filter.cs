@@ -10,8 +10,8 @@ namespace WinFormsApp4
     {
         public static string gettextmark(string input)
         {
-            string grade="";
-            if (input == "</t") return grade = " "; 
+            string grade;
+            if (input == "</t") return grade = " ";
             if (input == "Rút") return grade = "W";
             if (input == "Vắn") return grade = "F";
             if (input == null) return grade = "";
@@ -47,8 +47,11 @@ namespace WinFormsApp4
                     break;
             }
             return grade;
-
         }
+
+
+
+
         public static string getBetween(string strSource, string strStart, string strEnd)
         {
             string result = "";
@@ -172,12 +175,31 @@ namespace WinFormsApp4
                 subjects[0].Name = cou.ToString();
             }
         }
+        public static string getuserid(string strSource)
+        {
+            string result, trim;
+            int Start, end;
+            string strTrim = strSource.Replace("\t", "").Replace("\n", "").Replace("\r", "");
+            Start = strTrim.IndexOf("<strong>", 0);
+            end = strTrim.IndexOf("</strong>", 0);
+            result = "Họ và Tên: "+ strTrim.Substring(Start+8, end  - Start-8);
+            trim = strTrim.Remove(Start, end - Start+8 );
+            Start = trim.IndexOf("<strong>", 0);
+            end = trim.IndexOf("</strong>", 0);
+            result = result + "\nMã số sinh viên: " + trim.Substring(Start + 8, end - Start - 8);
+            //trim = strTrim.Substring(Start, 24);
+            Start = trim.IndexOf("<td><font face=\"Times new roman\" size=\"3\">", 0);
+            end = trim.IndexOf("</font><font face=\"Times new roman\" size=\"3\"> (", 0);
+            result = result + "\nNgành: " + trim.Substring(Start + 42, end - Start - 42);
+            //trim = strTrim.Substring(Start, 24);
+            Start = trim.IndexOf("</font><font face=\"Times new roman\" size=\"3\"> (", 0);
+            end = trim.IndexOf(")</font></td>", 0);
+            result = result + "\nLớp: " + trim.Substring(Start + 47, end - Start - 47);
+            //trim = strTrim.Substring(Start, 24);
 
+            // result = strTrim.Substring(Start, 24);
+            return result;
 
-
-
-
-
+        }
     }
-
 }

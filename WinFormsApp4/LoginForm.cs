@@ -1,0 +1,41 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace WinFormsApp4
+{
+    public partial class LoginForm : Form
+    {
+        public LoginForm()
+        {
+            InitializeComponent();
+            this.StartPosition = FormStartPosition.CenterScreen;
+
+            this.BackColor = Color.FromArgb(240, 244, 252);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Login lg = new Login();
+            if (lg.LoginStudent(textBox1.Text, textBox2.Text))
+            {
+                Kehoachhoctap kehoachhoctap = new Kehoachhoctap();
+                kehoachhoctap.ShowDialog();
+                this.Close();
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            RegisterForm registerForm = new RegisterForm(this);
+            registerForm.ShowDialog();
+        }
+    }
+}

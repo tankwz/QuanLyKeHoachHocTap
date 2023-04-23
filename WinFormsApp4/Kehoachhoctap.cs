@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 
 using System.Linq;
@@ -27,7 +29,7 @@ namespace WinFormsApp4
         public Kehoachhoctap()
         {
             InitializeComponent();
-
+            this.StartPosition = FormStartPosition.CenterScreen;
         }
 
         private void getMark(string strSource, studentSubjects[] subject)
@@ -51,13 +53,63 @@ namespace WinFormsApp4
             flowLayoutPanel1.Controls.Clear();
             for (int i = 0; i < panelCount; i++)
             {
-                var filteredList = studentlist0.Where(s => s.Count == i + 1).ToArray();
+              //  studentlist0[4].Id
+                var filteredList = studentlist0.Where(s => s.Count == i + 1).OrderBy(s=> s.Id).ToArray();
                 int countz = 1;
+                double avg = 0;
+
+                double allcre = 0;
                 foreach (var s in filteredList)
                 {
+                    if (s.Id?.Substring(0, 2) != null && s.Id.Substring(0, 2) == "TC")
+                        continue;
+                    switch (s.Marktext.ToUpper())
+                    {
+                        case "A":
+                            avg += s.Credits * 4;
+                            allcre += s.Credits;
+                            break;
+                        case "B+":
+                            avg += s.Credits * 3.5;
+                            allcre += s.Credits;
+                            break;
+                        case "B":
+                            avg += s.Credits * 3;
+                            allcre += s.Credits;
+                            break;
+                        case "C+":
+                            avg += s.Credits * 2.5;
+                            allcre += s.Credits;
+                            break;
+                        case "C":
+                            avg += s.Credits * 2;
+                            allcre += s.Credits;
+                            break;
+                        case "D+":
+                            avg += s.Credits * 1.5;
+                            allcre += s.Credits;
+                            break;
+                        case "D":
+                            avg += s.Credits * 1;
+                            allcre += s.Credits;
+                            break;
+                        case "F":
+                            allcre += s.Credits;
+                            break;
+                        case "W":
+                            allcre += 0;
+                            break;
+                        default:
+                            avg += s.Credits * 0;
+                            allcre += s.Credits;
+                            break;
+                    }
+                     if (s.Mark == null) allcre += 0;
                     s.Order = countz;
                     countz++;
                 }
+                avg = Math.Round(avg / allcre, 2);
+                // avg = avg / allcre;
                 Panel panel = new Panel();
                 panel.Height = 20;
                 panel.Width = 1300;
@@ -66,7 +118,32 @@ namespace WinFormsApp4
                 panel.BackColor = Color.White;
                 Label label = new Label();
                 label.Text = filteredList[0].Hknamhoc;
+                label.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+                label.ForeColor = Color.White;
                 label.Dock = DockStyle.Top;
+                label.TextAlign = ContentAlignment.MiddleCenter;
+                label.Size = new Size(1300, 28);
+                label.BackColor = Color.Cyan;
+                label.BackColor = Color.FromArgb(81, 140, 196);
+                // bitmap
+                Bitmap gradientBitmap = new Bitmap(label.Width, label.Height);
+                using (Graphics g = Graphics.FromImage(gradientBitmap))
+                {
+                    g.SmoothingMode = SmoothingMode.HighQuality;
+                    LinearGradientBrush brush = new LinearGradientBrush(
+                        new Point(0, 0),
+                        new Point(0, label.Height),
+                        Color.FromArgb(81, 140, 196),
+                        Color.FromArgb(3, 57, 131));
+                    g.FillRectangle(brush, 0, 0, label.Width, label.Height);
+                }
+                // label.AutoSize = true;
+                label.BackgroundImage = gradientBitmap;
+                Label labelz = new Label();
+                labelz.Text = "Điểm chung bình học kỳ: "+ avg.ToString();
+                labelz.Font = new Font("Segoe UI", 10);
+                //  labelz.Dock = DockStyle.Bottom;
+                labelz.AutoSize = true;
                 DataGridView dataGridView = new DataGridView();
                 dataGridView.DefaultCellStyle.Font = new Font("Segoe UI", 10);
                 dataGridView.AutoGenerateColumns = false;
@@ -91,20 +168,33 @@ namespace WinFormsApp4
                 dataGridView.Columns["Marktext"].Width = 80;
                 dataGridView.Columns["Mark"].Width = 80;
                 dataGridView.Columns["Get"].Width = 70;
-                dataGridView.Location = new Point(dataGridView.Location.X + 180, dataGridView.Location.Y + 25);
+                //dataGridView.Columns["Mark"].
+                dataGridView.Location = new Point(dataGridView.Location.X + 180, dataGridView.Location.Y + 45);
                 dataGridView.Width = 1000;
                 dataGridView.DataSource = filteredList;
                 dataGridView.BackgroundColor = Color.White;
                 dataGridView.BorderStyle = BorderStyle.None;
-                var heightt = 40;
+                dataGridView.CellFormatting += (sender, e) =>
+                {
+                    if (e.ColumnIndex == dataGridView.Columns["Mark"].Index && e.Value != null &&
+                        (e.Value.ToString() == "Vắng" || e.Value.ToString() == "Rút-HP" ||
+                        (double.TryParse(e.Value.ToString(), out double markValue) && markValue < 4)))
+                    {
+                        e.CellStyle.BackColor = Color.FromArgb(248, 50, 54);
+                    }
+                };
+                var heightt = 60;
                 foreach (var sj in filteredList)
                 {
                     heightt += 28;
                 }
                 dataGridView.Height = heightt;
-                panel.Height = heightt + 50;
+                panel.Height = heightt + 125;
                 panel.Controls.Add(dataGridView);
                 panel.Controls.Add(label);
+                panel.Controls.Add(labelz);
+
+                labelz.Location = new Point(panel.Width - labelz.Width - 50, panel.Height - labelz.Height-20);
                 flowLayoutPanel1.Controls.Add(panel);
             }
         }
@@ -112,7 +202,7 @@ namespace WinFormsApp4
 
         private int addPanel1(int p, subjects[] subject)
         {
-
+            //spawn table for new semester
             Panel panel = new Panel();
             panel.Height = 1000;
             panel.Width = 1300;
@@ -171,7 +261,6 @@ namespace WinFormsApp4
             panel.Controls.Add(dataGridView);
             panel.Controls.Add(label);
             flowLayoutPanel1.Controls.Add(panel);
-
             foreach (subjects sj in subject)
             {
                 if (sj.Done == totalhk)
@@ -185,7 +274,6 @@ namespace WinFormsApp4
                     {
                         var selectedItem = source1.FirstOrDefault(s => s.IdName == $"{sj.Id} - {sj.Name}");
                         nameCell.Value = $"{sj.Id} - {sj.Name}";
-
                         // source1.Remove(selectedItem);
                     }
                     else
@@ -200,13 +288,13 @@ namespace WinFormsApp4
                     row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Groupz });
                     row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Mandatory });
                     row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Done });
-                    dataGridView.Rows.Add(row);
-                    dataGridView.CellValueChanged += new DataGridViewCellEventHandler(dataGridView_CellValueChanged);
-                    dataGridView.EditingControlShowing += (sender, e) =>
-                    {
 
-                        dataGridView.CellEndEdit += new DataGridViewCellEventHandler(dataGridView_CellValueChanged);
-                    };
+                    dataGridView.Rows.Add(row);
+                    /*  dataGridView.CellValueChanged += new DataGridViewCellEventHandler(dataGridView_CellValueChanged);
+                      dataGridView.EditingControlShowing += (sender, e) =>
+                      {
+                          dataGridView.CellEndEdit += new DataGridViewCellEventHandler(dataGridView_CellValueChanged);
+                      };*/
                 }
             }
 
@@ -284,10 +372,13 @@ namespace WinFormsApp4
       */
 
 
-        private string prevSelectedSubjectName = "";
-
+        List<string> prevsubject = new List<string>();
+        int stop = 0;
         private void dataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+
+
+            // MessageBox.Show(stop.ToString());
             var dataGridView = (DataGridView)sender;
             if (e.ColumnIndex == dataGridView.Columns["Name"].Index)
             {
@@ -295,6 +386,37 @@ namespace WinFormsApp4
                 if (cell.Value != null)
                 {
                     string selectedName = cell.Value.ToString();
+
+                    //    MessageBox.Show(selectedName);
+                    /*
+                        foreach (DataGridViewRow row2 in dataGridView.Rows)
+                        {
+                            if (row2.Index != e.RowIndex)
+                            {
+                                DataGridViewComboBoxCell otherCell = row2.Cells["Name"] as DataGridViewComboBoxCell;
+
+                                if (otherCell != null && otherCell.Value != null)
+                                {
+                                    // MessageBox.Show(otherCell.Value.ToString());
+                                    if (!prevsubject.Contains(otherCell.Value.ToString()))
+                                    {
+                                        //MessageBox.Show(otherCell.Value.ToString() + "" + dataGridView.Rows[e.RowIndex].Cells["Name"].ToString());
+                                        MessageBox.Show("remvoed");
+                                        prevsubject.Remove(otherCell.Value.ToString());
+
+                                        foreach (subjects sj in subject)
+                                        {
+                                            if (sj.Name == selectedName)
+                                            {
+                                                sj.Done = 0;
+                                                MessageBox.Show("a");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        */
                     subjects selectedSubject = subject.FirstOrDefault(s => s.Name == selectedName);
                     if (selectedSubject != null)
                     {
@@ -304,22 +426,28 @@ namespace WinFormsApp4
                         dataGridView.Rows[e.RowIndex].Cells["Mandatory"].Value = selectedSubject.Mandatory;
                         dataGridView.Rows[e.RowIndex].Cells["Done"].Value = selectedSubject.Done;
 
+
                         foreach (DataGridViewRow row in dataGridView.Rows)
                         {
+                            //MessageBox.Show(e.RowIndex.ToString() + "-" + row.Index.ToString());
                             if (row.Index == e.RowIndex)
                             {
+                                //stop++;
                                 DataGridViewTextBoxCell otherCelldone = row.Cells["Done"] as DataGridViewTextBoxCell;
                                 if (otherCelldone != null && otherCelldone.Value != null)
                                 {
                                     if (int.Parse(otherCelldone.Value.ToString()) == totalhk)
                                     {
-                                        MessageBox.Show(otherCelldone.Value.ToString() + totalhk.ToString());
+                                        // MessageBox.Show(otherCelldone.Value.ToString() + totalhk.ToString());
                                         cell.Value = null;
                                         dataGridView.Rows[e.RowIndex].Cells["Credits"].Value = null;
                                         dataGridView.Rows[e.RowIndex].Cells["Prerequisite"].Value = null;
                                         dataGridView.Rows[e.RowIndex].Cells["Groupz"].Value = null;
                                         dataGridView.Rows[e.RowIndex].Cells["Mandatory"].Value = null;
-                                        MessageBox.Show("Môn học này đã được chọn", "Lưu ý");
+                                        MessageBox.Show("Môn học này đã được chọn 1", "Lưu ý");
+                                        //MessageBox.Show(stop.ToString());
+
+                                        //  dataGridView.Rows.RemoveAt(e.RowIndex+1);
                                         break;
                                     }
                                 }
@@ -338,23 +466,29 @@ namespace WinFormsApp4
                                         dataGridView.Rows[e.RowIndex].Cells["Prerequisite"].Value = null;
                                         dataGridView.Rows[e.RowIndex].Cells["Groupz"].Value = null;
                                         dataGridView.Rows[e.RowIndex].Cells["Mandatory"].Value = null;
-                                        MessageBox.Show("Môn học này đã được chọn", "Lưu ý");
+                                        //   dataGridView.Rows[e.RowIndex].Cells["Done"].Value = null;
+                                        MessageBox.Show("Môn học này đã được chọn 2", "Lưu ý");
+                                        // dataGridView.Rows.RemoveAt(e.RowIndex);
                                         break;
                                     }
                                 }
                             }
                         }
-
-                        if (prevSelectedSubjectName != selectedName)
+                        /*
+                        foreach(string sj in prevsubject)
                         {
-                            // set sj.Done of previous subject to 0
-                            subjects prevSelectedSubject = subject.FirstOrDefault(s => s.Name == prevSelectedSubjectName);
-                            if (prevSelectedSubject != null)
+                            if (sj == selectedName)
                             {
-                                prevSelectedSubject.Done = 0;
+                                // set sj.Done of previous subject to 0
+                                subjects prevSelectedSubject = subject.FirstOrDefault(s => s.Name == sj);
+                                if (prevSelectedSubject != null)
+                                {
+                                    MessageBox.Show("Môn học này đã được chọn 3", "Lưu ý");
+                                    //prevSelectedSubject.Done = 0;
+                                }
+                                //sj = selectedName;
                             }
-                            prevSelectedSubjectName = selectedName;
-                        }
+                        }*/
                         string[] prerequisites = selectedSubject.Prerequisite.Split(',');
                         string unsatisfiedPrerequisites = "";
                         foreach (string prerequisite in prerequisites)
@@ -381,8 +515,22 @@ namespace WinFormsApp4
                         }
                         else
                         {
-                            selectedSubject.Done = totalhk;
-                            MessageBox.Show(selectedSubject.Done.ToString());
+                            //  selectedSubject.Done = totalhk;
+
+                            foreach (subjects sj in subject)
+                            {
+                                if (sj.Id == selectedSubject.Id)
+                                {
+                                    /*if (!prevsubject.Contains(sj.Name))
+                                    {
+                                        prevsubject.Add(sj.Name);
+                                           MessageBox.Show("here 2");
+                                    }*/
+                                    sj.Done = totalhk;
+                                    //MessageBox.Show(sj.Name + sj.Done.ToString());
+                                }
+                            }
+                            //MessageBox.Show("here "+ selectedSubject.Done.ToString());
                         }
                     }
                 }
@@ -406,7 +554,7 @@ namespace WinFormsApp4
             }
             filter.gethk(file, studentlist0);
 
-            subject = DatabaseConnection.connectdata();
+            subject = SubjectDatabaseConnection.connectdata();
 
             for (int a = 0; a < studentlist0.Length; a++)
             {
@@ -417,6 +565,7 @@ namespace WinFormsApp4
                 {
                     studentlist0[a].Name = "Cố vấn học tập sinh hoạt lớp";
                     studentlist0[a].Mark = "";
+                    studentlist0[a].Id = "SHCVHT";
                 }
                 if (studentlist0[a].Mark == "Vắn") studentlist0[a].Mark = "Vắng";
                 if (studentlist0[a].Mark == "Rút") studentlist0[a].Mark = "Rút-HP";
@@ -477,6 +626,8 @@ namespace WinFormsApp4
             // dataGridView1.DataSource = filteredList;
             addPanel(Int32.Parse(studentlist0[0].Name), studentlist0);
             totalhk = Int32.Parse(studentlist0[0].Name);
+            string name = filter.getuserid(file);
+            label2.Text = name;
             // MessageBox.Show("first" + totalhk);
         }
 
@@ -598,6 +749,11 @@ namespace WinFormsApp4
                     {
                         // MessageBox.Show(sj.Id);
                         sj.Done = totalhk;
+                        if (!prevsubject.Contains(sj.Name))
+                        {
+                            prevsubject.Add(sj.Name);
+                            //   MessageBox.Show("here 2");
+                        }
                     }
                 }
             }
@@ -605,46 +761,14 @@ namespace WinFormsApp4
             them();
         }
 
-        /*
-
-        private void SetSelectedSubjectsInDataGridView(DataGridView dataGridView, List<string> selectedSubjects)
-        {
-            foreach (DataGridViewRow row in dataGridView.Rows)
-            {
-                var idCell = row.Cells["Name"];
-                if (idCell != null && idCell.Value != null && selectedSubjects.Contains(idCell.Value.ToString().Substring(0,5)))
-                {
-                    var nameCell = row.Cells["Name"];
-                    if (nameCell != null && nameCell.Value != null)
-                    {
-                        string subjectName = nameCell.Value.ToString();
-                        nameCell.Value = subjectName;
-                    }
-                }
-            }
-        }
-        private void buttonFillComboBoxes_Click(object sender, EventArgs e)
-        {
-            foreach (Control control in flowLayoutPanel1.Controls)
-            {
-                if (control is Panel panel)
-                {
-                    var dataGridView = panel.Controls.Find("dataz", false).FirstOrDefault() as DataGridView;
-                    if (dataGridView != null)
-                    {
-                        SetSelectedSubjectsInDataGridView(dataGridView, selectedSubjects);
-                    }
-                }
-            }
-        }
-
-        */
-
         private void button5_Click(object sender, EventArgs e)
         {
-            ThemHocPhan thp = new ThemHocPhan(subject);
+
+            this.Hide();
+            ThemHocPhan thp = new ThemHocPhan(subject, this);
             thp.SelectedSubjectsSelected += Thp_SelectedSubjectsSelected;
-            thp.Show();
+            thp.ShowDialog();
+
         }
     }
 }

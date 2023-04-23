@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace WinFormsApp4
 {
-    internal class DatabaseConnection
+    internal class SubjectDatabaseConnection
     {
         public static subjects[]  connectdata()
         {
