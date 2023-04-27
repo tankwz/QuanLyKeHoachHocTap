@@ -36,6 +36,7 @@
             textBox1 = new TextBox();
             btnRes = new Button();
             pictureBox1 = new PictureBox();
+            chkShowpas = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -74,7 +75,6 @@
             // 
             textBox2.Location = new Point(130, 200);
             textBox2.Name = "textBox2";
-            textBox2.PasswordChar = '*';
             textBox2.Size = new Size(188, 27);
             textBox2.TabIndex = 10;
             // 
@@ -105,11 +105,24 @@
             pictureBox1.TabIndex = 16;
             pictureBox1.TabStop = false;
             // 
+            // chkShowpas
+            // 
+            chkShowpas.AutoSize = true;
+            chkShowpas.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            chkShowpas.Location = new Point(130, 249);
+            chkShowpas.Name = "chkShowpas";
+            chkShowpas.Size = new Size(156, 29);
+            chkShowpas.TabIndex = 19;
+            chkShowpas.Text = "Hiện mật khẩu";
+            chkShowpas.UseVisualStyleBackColor = true;
+            chkShowpas.CheckedChanged += chkShowpas_CheckedChanged;
+            // 
             // LoginForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(382, 423);
+            Controls.Add(chkShowpas);
             Controls.Add(pictureBox1);
             Controls.Add(btnRes);
             Controls.Add(label2);
@@ -132,5 +145,6 @@
         private TextBox textBox1;
         private Button btnRes;
         private PictureBox pictureBox1;
+        private CheckBox chkShowpas;
     }
 }

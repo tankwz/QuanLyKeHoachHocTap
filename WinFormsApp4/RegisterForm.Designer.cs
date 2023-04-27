@@ -40,6 +40,7 @@
             label4 = new Label();
             btnBack = new Button();
             pictureBox1 = new PictureBox();
+            chkShowpas = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -54,14 +55,13 @@
             // 
             textBox2.Location = new Point(203, 220);
             textBox2.Name = "textBox2";
-            textBox2.PasswordChar = '*';
             textBox2.Size = new Size(188, 27);
             textBox2.TabIndex = 1;
             // 
             // button1
             // 
             button1.Font = new Font("Segoe UI", 13F, FontStyle.Bold, GraphicsUnit.Point);
-            button1.Location = new Point(272, 362);
+            button1.Location = new Point(272, 396);
             button1.Name = "button1";
             button1.Size = new Size(143, 50);
             button1.TabIndex = 2;
@@ -71,7 +71,7 @@
             // 
             // textBox3
             // 
-            textBox3.Location = new Point(203, 303);
+            textBox3.Location = new Point(203, 337);
             textBox3.Name = "textBox3";
             textBox3.Size = new Size(188, 27);
             textBox3.TabIndex = 3;
@@ -100,7 +100,7 @@
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            label3.Location = new Point(29, 302);
+            label3.Location = new Point(29, 336);
             label3.Name = "label3";
             label3.Size = new Size(94, 25);
             label3.TabIndex = 6;
@@ -110,7 +110,6 @@
             // 
             textBox4.Location = new Point(203, 263);
             textBox4.Name = "textBox4";
-            textBox4.PasswordChar = '*';
             textBox4.Size = new Size(188, 27);
             textBox4.TabIndex = 7;
             // 
@@ -127,7 +126,7 @@
             // btnBack
             // 
             btnBack.Font = new Font("Segoe UI", 13F, FontStyle.Bold, GraphicsUnit.Point);
-            btnBack.Location = new Point(27, 362);
+            btnBack.Location = new Point(27, 396);
             btnBack.Name = "btnBack";
             btnBack.Size = new Size(205, 47);
             btnBack.TabIndex = 9;
@@ -144,11 +143,24 @@
             pictureBox1.TabIndex = 17;
             pictureBox1.TabStop = false;
             // 
+            // chkShowpas
+            // 
+            chkShowpas.AutoSize = true;
+            chkShowpas.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            chkShowpas.Location = new Point(203, 302);
+            chkShowpas.Name = "chkShowpas";
+            chkShowpas.Size = new Size(156, 29);
+            chkShowpas.TabIndex = 18;
+            chkShowpas.Text = "Hiện mật khẩu";
+            chkShowpas.UseVisualStyleBackColor = true;
+            chkShowpas.CheckedChanged += chkShowpas_CheckedChanged;
+            // 
             // RegisterForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(470, 465);
+            Controls.Add(chkShowpas);
             Controls.Add(pictureBox1);
             Controls.Add(btnBack);
             Controls.Add(label4);
@@ -180,5 +192,6 @@
         private Label label4;
         private Button btnBack;
         private PictureBox pictureBox1;
+        private CheckBox chkShowpas;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,6 +9,20 @@ namespace WinFormsApp4
 {
     internal class filter
     {
+        private void getMark(string strSource, studentSubjects[] subject)
+        {
+            int Start;
+            int i = 0;
+            while (strSource.Contains("-"))
+            {
+                Start = strSource.IndexOf("-", 0);
+                subject[i + 1].Mark = strSource.Substring(Start - 5, 5);
+                if (strSource.Length > 5)
+                    strSource = strSource.Remove(Start - 5, 6);
+                i++;
+            }
+            subject[0].Id = i.ToString();
+        }
         public static string gettextmark(string input)
         {
             string grade;
@@ -87,6 +102,7 @@ namespace WinFormsApp4
             subject[0].Id = num.ToString();
             return num;
         }
+
         public static void gethk(string strSource, studentSubjects[] subjects)
         {
             string result;
@@ -96,6 +112,33 @@ namespace WinFormsApp4
             int i = 0;
             int cou = 0;
             string strTrim = strSource.Replace("\t", "").Replace("\n", "").Replace("\r", "");
+            //anh van can ban
+            if (strTrim.Contains("<td width=\"8%\" align=\"left\" style=\"border-bottom:none; border-right:none;border-left:none\">"))
+                {
+                cou++;
+                Start = strTrim.IndexOf("Học Kỳ 1", 0);
+                drl = strTrim.IndexOf("Điểm Rèn Luyện ", 0);
+                strTrim2 = strTrim.Substring(Start, drl + 14 - Start);
+                id = getBetween(strTrim2, "<td width=\"8%\" align=\"left\" style=\"border-bottom:none; border-right:none;border-left:none\">", "</td>");
+                i = getid(id, subjects, i);
+
+                result = strTrim.Substring(Start, 24);
+                strTrim3 = strTrim2;
+                for (; a <= Int32.Parse(subjects[0].Id); a++)
+                {
+                    subjects[a].Count = cou;
+                    subjects[a].Hknamhoc = result;
+                    markStart = strTrim3.IndexOf("</td>    <td align=\"left\">", 0) + 26;
+                    mark = strTrim3.Substring(markStart, 3);
+                    subjects[a].Mark = mark;
+                    strTrim3 = strTrim3.Remove(markStart - 28, 152);
+                }
+                cou--;
+                //strTrim = strTrim.Remove(Start, drl + 14 - Start);
+            }
+
+
+
             while (strTrim.Contains("Học Kỳ 1") || strTrim.Contains("Học Kỳ 2") || strTrim.Contains("Học Kỳ Hè"))
             {
                 if (strTrim.Contains("Học Kỳ 1"))
@@ -108,7 +151,6 @@ namespace WinFormsApp4
                     i = getid(id, subjects, i);
 
                     result = strTrim.Substring(Start, 24);
-
                     strTrim3 = strTrim2;
 
                     for (; a <= Int32.Parse(subjects[0].Id); a++)
@@ -119,7 +161,6 @@ namespace WinFormsApp4
                         mark = strTrim3.Substring(markStart, 3);
                         subjects[a].Mark = mark;
                         strTrim3 = strTrim3.Remove(markStart - 28, 152);
-
                     }
                     strTrim = strTrim.Remove(Start, drl + 14 - Start);
                 }

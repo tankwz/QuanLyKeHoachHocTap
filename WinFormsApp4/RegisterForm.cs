@@ -15,8 +15,10 @@ namespace WinFormsApp4
         public RegisterForm()
         {
             InitializeComponent();
-
             this.BackColor = Color.FromArgb(240, 244, 252);
+            this.StartPosition = FormStartPosition.CenterScreen;
+            textBox2.UseSystemPasswordChar = true;
+            textBox4.UseSystemPasswordChar = true;
         }
 
         public RegisterForm(Form lgform)
@@ -24,6 +26,9 @@ namespace WinFormsApp4
             this.form = lgform;
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
+            textBox2.UseSystemPasswordChar = true;
+            textBox4.UseSystemPasswordChar = true;
+            this.BackColor = Color.FromArgb(240, 244, 252);
         }
         Form form = new Form();
         private void button1_Click(object sender, EventArgs e)
@@ -34,13 +39,32 @@ namespace WinFormsApp4
                 return;
             }
             register rg = new register();
-            rg.RegisterStudent(textBox1.Text, textBox2.Text, textBox3.Text);
+            if (rg.RegisterStudent(textBox1.Text, textBox2.Text, textBox3.Text))
+            {
+                this.Close();
+                form.Show();
+            }
+            
         }
 
         private void btnBack_Click(object sender, EventArgs e)
         {
             this.Close();
             form.Show();
+        }
+
+        private void chkShowpas_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkShowpas.Checked)
+            {
+                textBox2.UseSystemPasswordChar = false;
+                textBox4.UseSystemPasswordChar = false;
+            }
+            else
+            {
+                textBox2.UseSystemPasswordChar = true;
+                textBox4.UseSystemPasswordChar = true;
+            }
         }
     }
 }

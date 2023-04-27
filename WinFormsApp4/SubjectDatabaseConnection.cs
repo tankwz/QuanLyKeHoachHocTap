@@ -22,12 +22,12 @@ namespace WinFormsApp4
             totalsub = (int)cmd.ExecuteScalar();
             int i = 0;
             subjects[] subject = new subjects[totalsub];
-            string query2 = "select KTPM_K44.sub_id, name, credits, prerequisite, mandatory, groupz from subjects,KTPM_K44 where KTPM_K44.sub_id = subjects.sub_id";
+            string query2 = "select KTPM_K44.sub_id, name, credits, prerequisite, mandatory, groupz,recommend, opentime from subjects,KTPM_K44 where KTPM_K44.sub_id = subjects.sub_id;";
             SqlCommand cmd2 = new SqlCommand(query2, conn);
             SqlDataReader reader = cmd2.ExecuteReader();
             while (reader.Read())
             {
-                subject[i] = new subjects(reader["sub_id"].ToString(), reader["name"].ToString(), int.Parse(reader["credits"].ToString()), reader["prerequisite"].ToString(), reader["mandatory"].ToString(), reader["groupz"].ToString());
+                subject[i] = new subjects(reader["sub_id"].ToString(), reader["name"].ToString(), int.Parse(reader["credits"].ToString()), reader["prerequisite"].ToString(), reader["mandatory"].ToString(), reader["groupz"].ToString(), int.Parse(reader["recommend"].ToString()), int.Parse(reader["opentime"].ToString())/*, int.Parse(reader["done"].ToString())*/);
                 i++;
             }
             conn.Close();

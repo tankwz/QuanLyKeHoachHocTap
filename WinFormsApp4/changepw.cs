@@ -1,31 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Security.Cryptography;
-using System.Data.SqlClient;
 
 namespace WinFormsApp4
 {
-    internal class register
+    internal class changepw
     {
-        //private List<studentinfo> students = new List<studentinfo>();
-
-        public bool RegisterStudent(string id, string password, string name)
+        public bool ChangePassword(string id, string currentPassword, string newPassword)
         {
-            // Check if the student ID already exists in the database
+            // Check if the student exists in the database
             bool studentExists = false;
             string connstring = "Data Source = DESKTOP-IVA70I6;"
-                                        + "Initial Catalog = KHHT;"
-                                        + "Integrated Security = true;";
+                                            + "Initial Catalog = KHHT;"
+                                            + "Integrated Security = true;";
             using (SqlConnection conn = new SqlConnection(connstring))
             {
                 conn.Open();
-                string query = "SELECT COUNT(*) FROM students WHERE st_id = @id";
+                string query = "SELECT COUNT(*) FROM students WHERE st_id = @id AND st_password_hash = @currentPassword";
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@currentPassword", SHA256enc.Hash(currentPassword));
                     int count = (int)cmd.ExecuteScalar();
                     if (count > 0)
                     {
@@ -34,34 +32,31 @@ namespace WinFormsApp4
                 }
             }
 
-            if (studentExists)
+            if (!studentExists)
             {
-                MessageBox.Show("Mã số sinh viên đã tồn tại", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Mã số sinh viên hoặc mật khẩu không đúng", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
-           string passwordHash = SHA256enc.Hash(password);
+            // Update the student's password
+            string newPasswordHash = SHA256enc.Hash(newPassword);
 
-
-            //students.Add(newStudent);
             using (SqlConnection conn = new SqlConnection(connstring))
             {
                 conn.Open();
-                string query = "INSERT INTO students (st_id, st_password_hash, st_name) VALUES (@id, @password, @name)";
+                string query = "UPDATE students SET st_password_hash = @newPassword WHERE st_id = @id";
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@id", id);
-                    cmd.Parameters.AddWithValue("@password", passwordHash);
-                    cmd.Parameters.AddWithValue("@name", name);
+                    cmd.Parameters.AddWithValue("@newPassword", newPasswordHash);
                     cmd.ExecuteNonQuery();
                 }
             }
 
             // Display a success message
-            MessageBox.Show("Đăng ký thành công.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Thay đổi mật khẩu thành công.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             return true;
         }
-
     }
 }

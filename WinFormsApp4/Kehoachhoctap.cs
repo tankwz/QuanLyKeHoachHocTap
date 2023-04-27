@@ -25,73 +25,85 @@ namespace WinFormsApp4
 {
     public partial class Kehoachhoctap : Form
     {
-
-        public Kehoachhoctap()
+        private string Mssv;
+        public Kehoachhoctap(string mssv)
         {
+            this.Mssv = mssv;
             InitializeComponent();
             this.StartPosition = FormStartPosition.CenterScreen;
         }
 
-        private void getMark(string strSource, studentSubjects[] subject)
-        {
-            int Start;
-            int i = 0;
-            while (strSource.Contains("-"))
-            {
-                Start = strSource.IndexOf("-", 0);
-                subject[i + 1].Mark = strSource.Substring(Start - 5, 5);
-                if (strSource.Length > 5)
-                    strSource = strSource.Remove(Start - 5, 6);
-                i++;
-            }
-            subject[0].Id = i.ToString();
-        }
+
 
         private void addPanel(int p, studentSubjects[] studentlist0)
         {
             int panelCount = p;
             flowLayoutPanel1.Controls.Clear();
+            double allavg = 0;
+            double allcountcre = 0;
+            double allcountcredisplay = 0;
             for (int i = 0; i < panelCount; i++)
             {
-              //  studentlist0[4].Id
-                var filteredList = studentlist0.Where(s => s.Count == i + 1).OrderBy(s=> s.Id).ToArray();
+                //  studentlist0[4].Id
+                var filteredList = studentlist0.Where(s => s.Count == i + 1).OrderBy(s => s.Id).ToArray();
                 int countz = 1;
                 double avg = 0;
-
                 double allcre = 0;
                 foreach (var s in filteredList)
                 {
-                    if (s.Id?.Substring(0, 2) != null && s.Id.Substring(0, 2) == "TC")
-                        continue;
+                 /*   if (s.Id?.Substring(0, 3) != null && s.Id.Substring(0, 3) == "TC0")
+                        continue;*/
                     switch (s.Marktext.ToUpper())
                     {
                         case "A":
                             avg += s.Credits * 4;
                             allcre += s.Credits;
+                            allcountcredisplay += s.Credits;
+                            if (s.Name.Substring(s.Name.Length - 3, 3) != "(*)")
+                            { 
+                                allavg += s.Credits * 4; allcountcre += s.Credits; };
                             break;
                         case "B+":
                             avg += s.Credits * 3.5;
                             allcre += s.Credits;
+                            allcountcredisplay += s.Credits;
+                            if (s.Name.Substring(s.Name.Length - 3, 3) != "(*)")
+                            { allavg += s.Credits * 3.5; allcountcre += s.Credits; };
                             break;
                         case "B":
                             avg += s.Credits * 3;
                             allcre += s.Credits;
+                            allcountcredisplay += s.Credits;
+                            if (s.Name.Substring(s.Name.Length - 3, 3) != "(*)")
+                            { allavg += s.Credits * 3; allcountcre += s.Credits; };
                             break;
                         case "C+":
                             avg += s.Credits * 2.5;
                             allcre += s.Credits;
+                            allcountcredisplay += s.Credits;
+                            if (s.Name.Substring(s.Name.Length - 3, 3) != "(*)")
+                            { allavg += s.Credits * 2.5; allcountcre += s.Credits; };
                             break;
                         case "C":
                             avg += s.Credits * 2;
                             allcre += s.Credits;
+                            allcountcredisplay += s.Credits;
+                            if (s.Name.Substring(s.Name.Length - 3, 3) != "(*)")
+                            { allavg += s.Credits * 2; allcountcre += s.Credits; };
                             break;
                         case "D+":
                             avg += s.Credits * 1.5;
                             allcre += s.Credits;
+                            allcountcredisplay += s.Credits;
+                            if (s.Name.Substring(s.Name.Length - 3, 3) != "(*)")
+                            { allavg += s.Credits * 1.5; allcountcre += s.Credits; };
                             break;
                         case "D":
                             avg += s.Credits * 1;
                             allcre += s.Credits;
+                            allcountcredisplay += s.Credits;
+                            if (s.Name.Substring(s.Name.Length - 3, 3) != "(*)")
+                            { allavg += s.Credits * 1; allcountcre += s.Credits;};
                             break;
                         case "F":
                             allcre += s.Credits;
@@ -104,11 +116,16 @@ namespace WinFormsApp4
                             allcre += s.Credits;
                             break;
                     }
-                     if (s.Mark == null) allcre += 0;
+                    if (s.Mark == null) allcre += 0;
                     s.Order = countz;
                     countz++;
                 }
+                //MessageBox.Show(allcountcre.ToString());
                 avg = Math.Round(avg / allcre, 2);
+                //if (allcountcre = 0)
+                double allavg2;
+                allavg2 = Math.Round(allavg / allcountcre, 2);
+
                 // avg = avg / allcre;
                 Panel panel = new Panel();
                 panel.Height = 20;
@@ -116,34 +133,29 @@ namespace WinFormsApp4
                 panel.BorderStyle = BorderStyle.FixedSingle;
                 panel.Name = "panelz" + i.ToString();
                 panel.BackColor = Color.White;
-                Label label = new Label();
-                label.Text = filteredList[0].Hknamhoc;
-                label.Font = new Font("Segoe UI", 11, FontStyle.Bold);
-                label.ForeColor = Color.White;
-                label.Dock = DockStyle.Top;
-                label.TextAlign = ContentAlignment.MiddleCenter;
-                label.Size = new Size(1300, 28);
-                label.BackColor = Color.Cyan;
-                label.BackColor = Color.FromArgb(81, 140, 196);
+                Label lbhocky = new Label();
+                lbhocky.Text = filteredList[0].Hknamhoc;
+                lbhocky.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+                lbhocky.ForeColor = Color.White;
+                lbhocky.Dock = DockStyle.Top;
+                lbhocky.TextAlign = ContentAlignment.MiddleCenter;
+                lbhocky.Size = new Size(1300, 28);
+                lbhocky.BackColor = Color.Cyan;
+                lbhocky.BackColor = Color.FromArgb(81, 140, 196);
                 // bitmap
-                Bitmap gradientBitmap = new Bitmap(label.Width, label.Height);
+                Bitmap gradientBitmap = new Bitmap(lbhocky.Width, lbhocky.Height);
                 using (Graphics g = Graphics.FromImage(gradientBitmap))
                 {
                     g.SmoothingMode = SmoothingMode.HighQuality;
                     LinearGradientBrush brush = new LinearGradientBrush(
                         new Point(0, 0),
-                        new Point(0, label.Height),
+                        new Point(0, lbhocky.Height),
                         Color.FromArgb(81, 140, 196),
                         Color.FromArgb(3, 57, 131));
-                    g.FillRectangle(brush, 0, 0, label.Width, label.Height);
+                    g.FillRectangle(brush, 0, 0, lbhocky.Width, lbhocky.Height);
                 }
                 // label.AutoSize = true;
-                label.BackgroundImage = gradientBitmap;
-                Label labelz = new Label();
-                labelz.Text = "Điểm chung bình học kỳ: "+ avg.ToString();
-                labelz.Font = new Font("Segoe UI", 10);
-                //  labelz.Dock = DockStyle.Bottom;
-                labelz.AutoSize = true;
+                lbhocky.BackgroundImage = gradientBitmap;
                 DataGridView dataGridView = new DataGridView();
                 dataGridView.DefaultCellStyle.Font = new Font("Segoe UI", 10);
                 dataGridView.AutoGenerateColumns = false;
@@ -189,12 +201,42 @@ namespace WinFormsApp4
                     heightt += 28;
                 }
                 dataGridView.Height = heightt;
-                panel.Height = heightt + 125;
+                panel.Height = heightt + 120;
                 panel.Controls.Add(dataGridView);
-                panel.Controls.Add(label);
-                panel.Controls.Add(labelz);
+                panel.Controls.Add(lbhocky);
 
-                labelz.Location = new Point(panel.Width - labelz.Width - 50, panel.Height - labelz.Height-20);
+                                
+                // label.AutoSize = true;
+                Label lbavg = new Label();
+                lbavg.Text = "Điểm trung bình học kỳ: " + avg.ToString();
+                lbavg.Font = new Font("Segoe UI", 10);
+                lbavg.AutoSize = true;
+                panel.Controls.Add(lbavg);
+                lbavg.Location = new Point(panel.Width  - 500, panel.Height - lbavg.Height - 55);
+
+                Label lballavg = new Label();
+                lballavg.Text = "Điểm trung bình học kỳ tích lũy: " + allavg2.ToString();
+                lballavg.Font = new Font("Segoe UI", 10);
+                lballavg.AutoSize = true;
+                panel.Controls.Add(lballavg);
+                lballavg.Location = new Point(panel.Width  - 500, panel.Height - lballavg.Height - 30);
+
+
+                Label lbcredits = new Label();
+                lbcredits.Text = "Số tín chỉ học kỳ: " + allcre.ToString();
+                lbcredits.Font = new Font("Segoe UI", 10);
+                lbcredits.AutoSize = true;
+                panel.Controls.Add(lbcredits);
+                lbcredits.Location = new Point(panel.Width  - 1100, panel.Height - lbcredits.Height - 55);
+               // flowLayoutPanel1.Controls.Add(lbcredits);
+                Label lbcountcredits = new Label();
+                lbcountcredits.Text = "Số tín chỉ tích lũy: " + allcountcredisplay.ToString();
+                lbcountcredits.Font = new Font("Segoe UI", 10);
+                lbcountcredits.AutoSize = true;
+                panel.Controls.Add(lbcountcredits);
+                lbcountcredits.Location = new Point(panel.Width  -1100, panel.Height - lbcountcredits.Height - 30);
+
+
                 flowLayoutPanel1.Controls.Add(panel);
             }
         }
@@ -309,7 +351,6 @@ namespace WinFormsApp4
         {
             if (e.Exception is FormatException)
             {
-                // Handle the value not valid error here
                 MessageBox.Show("Value is not valid for this cell.");
                 e.ThrowException = false;
             }
@@ -386,7 +427,6 @@ namespace WinFormsApp4
                 if (cell.Value != null)
                 {
                     string selectedName = cell.Value.ToString();
-
                     //    MessageBox.Show(selectedName);
                     /*
                         foreach (DataGridViewRow row2 in dataGridView.Rows)
@@ -496,8 +536,8 @@ namespace WinFormsApp4
                             if (!string.IsNullOrEmpty(prerequisite))
                             {
                                 string prerequisiteId = prerequisite.Trim();
-                                subjects prerequisiteSubject = subject.FirstOrDefault(s => s.Id == prerequisiteId);
-                                if (prerequisiteSubject != null && prerequisiteSubject.Done == 0)
+                                subjects prerequisiteSubject = subject.FirstOrDefault(s => s.Id == prerequisiteId/* && s.Done < totalhk-1*/);
+                                if (prerequisiteSubject != null && (prerequisiteSubject.Done >= totalhk || prerequisiteSubject.Done == 0))
                                 {
                                     unsatisfiedPrerequisites += string.Format("{0} - {1}\n", prerequisiteId, prerequisiteSubject.Name);
                                 }
@@ -538,6 +578,9 @@ namespace WinFormsApp4
         }
 
         int totalhk;
+        int totalhkfix;
+        studentSubjects[] studentlist0 = new studentSubjects[90];
+
         private void button1_Click(object sender, EventArgs e)
         {
             filehtml.FileName = "";
@@ -547,7 +590,6 @@ namespace WinFormsApp4
             if (textBox1.Text == "")
                 return;
             string file = System.IO.File.ReadAllText(filehtml.FileName);
-            studentSubjects[] studentlist0 = new studentSubjects[90];
             for (int u = 0; u < 90; ++u)
             {
                 studentlist0[u] = new studentSubjects();
@@ -624,16 +666,14 @@ namespace WinFormsApp4
                 }
             }
             // dataGridView1.DataSource = filteredList;
+            if (studentlist0[0].Name == null) studentlist0[0].Name = 0.ToString();
             addPanel(Int32.Parse(studentlist0[0].Name), studentlist0);
             totalhk = Int32.Parse(studentlist0[0].Name);
-            string name = filter.getuserid(file);
-            label2.Text = name;
+            totalhkfix = totalhk;
+            //string name = filter.getuserid(file);
+            //label2.Text = name;
             // MessageBox.Show("first" + totalhk);
         }
-
-
-
-
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
@@ -752,7 +792,6 @@ namespace WinFormsApp4
                         if (!prevsubject.Contains(sj.Name))
                         {
                             prevsubject.Add(sj.Name);
-                            //   MessageBox.Show("here 2");
                         }
                     }
                 }
@@ -765,10 +804,45 @@ namespace WinFormsApp4
         {
 
             this.Hide();
-            ThemHocPhan thp = new ThemHocPhan(subject, this);
+            ThemHocPhan thp = new ThemHocPhan(subject, totalhk, this);
             thp.SelectedSubjectsSelected += Thp_SelectedSubjectsSelected;
             thp.ShowDialog();
 
+        }
+
+        private void button4_Click_1(object sender, EventArgs e)
+        {
+            // MessageBox.Show(Mssv.ToString());
+            foreach (studentSubjects st in studentlist0)
+            {
+                st.St_id = Mssv;
+
+            }
+            addStudentSujecttoDB add = new addStudentSujecttoDB();
+            add.addstudent(studentlist0);
+            add.UpdateHk(Mssv, totalhkfix);
+            MessageBox.Show("Đã lưu vào cơ sở dữ liệu");
+
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            studentSubjects[] studentlist1 = new studentSubjects[90];
+            getbangdiem gea = new getbangdiem();
+            studentlist1 = gea.GetStudentSubjects(Mssv);
+            if (studentlist1 != null)
+            /*  for (int i = totalhkfix; i<totalhk; i++)
+              {
+                  totalhkfix++;
+                  addPanel1(totalhkfix, subject);
+                  flowLayoutPanel1.AutoScrollPosition = new Point(0, int.MaxValue);
+              }*/
+            {
+                addPanel(Int32.Parse(studentlist1[0].Name), studentlist1);
+                totalhk = Int32.Parse(studentlist1[0].Name);
+                studentlist0 = studentlist1;
+            }
+            else MessageBox.Show("Không có dữ liệu trùng khớp với mã sinh viên");
         }
     }
 }

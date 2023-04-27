@@ -37,7 +37,7 @@ namespace WinFormsApp4
 
             while (reader.Read())
             {
-                subject[i] = new subjects(reader["sub_id"].ToString(), reader["name"].ToString(), int.Parse(reader["credits"].ToString()), reader["prerequisite"].ToString(), reader["mandatory"].ToString(), reader["groupz"].ToString());
+                subject[i] = new subjects(reader["sub_id"].ToString(), reader["name"].ToString(), int.Parse(reader["credits"].ToString()), reader["prerequisite"].ToString(), reader["mandatory"].ToString(), reader["groupz"].ToString(), int.Parse(reader["recommend"].ToString()), int.Parse(reader["opentime"].ToString())/*, int.Parse(reader["done"].ToString())*/);
                 i++;
             }
             dataGridView1.DataSource=subject;

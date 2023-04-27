@@ -33,12 +33,12 @@ namespace WinFormsApp4
 
             if (studentExists)
             {
-                MessageBox.Show("Student login successful.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+              //  MessageBox.Show("Student login successful.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return true;
             }
             else
             {
-                MessageBox.Show("Invalid student ID or password.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Sai mã sinh viên hoặc mật khẩu.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
         }

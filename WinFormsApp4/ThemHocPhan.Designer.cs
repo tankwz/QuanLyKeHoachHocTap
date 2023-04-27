@@ -36,6 +36,7 @@
             panel2 = new Panel();
             button5 = new Button();
             bordera = new Panel();
+            button1 = new Button();
             flowLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             panel1.SuspendLayout();
@@ -85,6 +86,7 @@
             // panel2
             // 
             panel2.BorderStyle = BorderStyle.FixedSingle;
+            panel2.Controls.Add(button1);
             panel2.Controls.Add(button5);
             panel2.Location = new Point(1356, 115);
             panel2.Name = "panel2";
@@ -110,6 +112,17 @@
             bordera.Name = "bordera";
             bordera.Size = new Size(1345, 731);
             bordera.TabIndex = 11;
+            // 
+            // button1
+            // 
+            button1.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
+            button1.Location = new Point(52, 125);
+            button1.Name = "button1";
+            button1.Size = new Size(142, 52);
+            button1.TabIndex = 8;
+            button1.Text = "Xác nhận";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click_1;
             // 
             // ThemHocPhan
             // 
@@ -140,5 +153,6 @@
         private Button button5;
         private Panel bordera;
         private DataGridView dataGridView1;
+        private Button button1;
     }
 }

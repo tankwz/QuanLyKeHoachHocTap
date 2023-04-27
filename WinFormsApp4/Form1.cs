@@ -15,7 +15,6 @@ namespace WinFormsApp4
         public Form1()
         {
             InitializeComponent();
-
         }
 
 
@@ -28,10 +27,6 @@ namespace WinFormsApp4
                 End = strSource.IndexOf(strEnd, Start);
                 return strSource.Substring(Start, End - Start);
             }
-
-
-
-
             return "";
         }
         int dulieu = 0;

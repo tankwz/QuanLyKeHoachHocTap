@@ -8,6 +8,9 @@ namespace WinFormsApp4
 {
     internal class studentSubjects
     {
+        private string st_id;
+        public string St_id { get => st_id; set => st_id = value; }
+
         private int count;
         public int Count { get => count; set => count = value; }
 
@@ -33,8 +36,11 @@ namespace WinFormsApp4
         public string Get { get => get; set => get = value; }
 
 
-        public studentSubjects(int order, int count,string hknamhoc, string marktext, string mark, string name, string id, int credits, string get)
+
+        public studentSubjects(string st_id, int order, int count,string hknamhoc, string marktext, string mark, string name, string id, int credits, string get, int recommend, int opentime)
         {
+
+            St_id = st_id;
             Order = order;
             Count = count;
             Hknamhoc= hknamhoc;
@@ -44,6 +50,7 @@ namespace WinFormsApp4
             Id= id;
             Credits = credits;
             Get = get;
+
         }
         public studentSubjects() { }
     }

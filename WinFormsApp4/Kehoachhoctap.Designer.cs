@@ -40,6 +40,8 @@ namespace WinFormsApp4
             label2 = new Label();
             flowLayoutPanel1 = new FlowLayoutPanel();
             panel2 = new Panel();
+            button6 = new Button();
+            button4 = new Button();
             button5 = new Button();
             button3 = new Button();
             button2 = new Button();
@@ -109,9 +111,8 @@ namespace WinFormsApp4
             label2.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point);
             label2.Location = new Point(1119, 4);
             label2.Name = "label2";
-            label2.Size = new Size(280, 23);
+            label2.Size = new Size(0, 23);
             label2.TabIndex = 3;
-            label2.Text = "place holder text (to move easier)";
             // 
             // flowLayoutPanel1
             // 
@@ -127,6 +128,8 @@ namespace WinFormsApp4
             // panel2
             // 
             panel2.BorderStyle = BorderStyle.FixedSingle;
+            panel2.Controls.Add(button6);
+            panel2.Controls.Add(button4);
             panel2.Controls.Add(button5);
             panel2.Controls.Add(button3);
             panel2.Controls.Add(button2);
@@ -135,6 +138,28 @@ namespace WinFormsApp4
             panel2.Size = new Size(221, 731);
             panel2.TabIndex = 7;
             panel2.Paint += panel2_Paint;
+            // 
+            // button6
+            // 
+            button6.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
+            button6.Location = new Point(46, 473);
+            button6.Name = "button6";
+            button6.Size = new Size(142, 52);
+            button6.TabIndex = 9;
+            button6.Text = "Tải";
+            button6.UseVisualStyleBackColor = true;
+            button6.Click += button6_Click;
+            // 
+            // button4
+            // 
+            button4.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
+            button4.Location = new Point(46, 391);
+            button4.Name = "button4";
+            button4.Size = new Size(142, 52);
+            button4.TabIndex = 8;
+            button4.Text = "Lưu";
+            button4.UseVisualStyleBackColor = true;
+            button4.Click += button4_Click_1;
             // 
             // button5
             // 
@@ -219,5 +244,7 @@ namespace WinFormsApp4
         private Button button5;
         private Label label2;
         private PictureBox pictureBox1;
+        private Button button4;
+        private Button button6;
     }
 }

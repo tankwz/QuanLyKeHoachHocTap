@@ -18,6 +18,12 @@ namespace WinFormsApp4
 
         public int Done { get => done; set => done = value; }
 
+        private int recommend;
+        public int Recommend { get => recommend; set => recommend = value; }
+
+        private int opentime;
+        public int Opentime { get => opentime; set => opentime = value; }
+
 
         private string id;
         private string name;
@@ -28,7 +34,7 @@ namespace WinFormsApp4
         private int done;
 
 
-        public subjects(string id, string name,int credits, string prerequisite, string mandatory, string groupz )
+        public subjects(string id, string name,int credits, string prerequisite, string mandatory, string groupz, int recommend, int opentime/*, int done*/)
         {
             Id = id;
             Name = name;
@@ -36,7 +42,9 @@ namespace WinFormsApp4
             Prerequisite = prerequisite;
             Mandatory = mandatory;
             Groupz = groupz;
-            
+            Recommend = recommend;
+            Opentime = opentime;
+            //Done = done;
         }
 
         public subjects() { }
