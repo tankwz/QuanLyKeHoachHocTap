@@ -126,12 +126,7 @@ namespace WinFormsApp4
 
                         cmd.ExecuteNonQuery();
                     }
-
-                    
-
                 }
-
-
                 conn.Close();
             }
         }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace WinFormsApp4
 {
@@ -103,7 +105,7 @@ namespace WinFormsApp4
             return num;
         }
 
-        public static void gethk(string strSource, studentSubjects[] subjects)
+        public static int gethk(string strSource, studentSubjects[] subjects)
         {
             string result;
             string id, strTrim2, strTrim3, mark;
@@ -111,10 +113,11 @@ namespace WinFormsApp4
             int a = 1;
             int i = 0;
             int cou = 0;
+            int total = 0;
             string strTrim = strSource.Replace("\t", "").Replace("\n", "").Replace("\r", "");
             //anh van can ban
             if (strTrim.Contains("<td width=\"8%\" align=\"left\" style=\"border-bottom:none; border-right:none;border-left:none\">"))
-                {
+            {
                 cou++;
                 Start = strTrim.IndexOf("Học Kỳ 1", 0);
                 drl = strTrim.IndexOf("Điểm Rèn Luyện ", 0);
@@ -132,6 +135,7 @@ namespace WinFormsApp4
                     mark = strTrim3.Substring(markStart, 3);
                     subjects[a].Mark = mark;
                     strTrim3 = strTrim3.Remove(markStart - 28, 152);
+                    total++;
                 }
                 cou--;
                 //strTrim = strTrim.Remove(Start, drl + 14 - Start);
@@ -161,6 +165,7 @@ namespace WinFormsApp4
                         mark = strTrim3.Substring(markStart, 3);
                         subjects[a].Mark = mark;
                         strTrim3 = strTrim3.Remove(markStart - 28, 152);
+                        total++;
                     }
                     strTrim = strTrim.Remove(Start, drl + 14 - Start);
                 }
@@ -184,6 +189,7 @@ namespace WinFormsApp4
                         mark = strTrim3.Substring(markStart, 3);
                         subjects[a].Mark = mark;
                         strTrim3 = strTrim3.Remove(markStart - 28, 152);
+                        total++;
 
                     }
                     subjects[a].Count = cou;
@@ -210,11 +216,14 @@ namespace WinFormsApp4
                         mark = strTrim3.Substring(markStart, 3);
                         subjects[a].Mark = mark;
                         strTrim3 = strTrim3.Remove(markStart - 28, 152);
+                        total++;
+
                     }
                     strTrim = strTrim.Remove(Start, drl + 14 - Start);
                 }
                 subjects[0].Name = cou.ToString();
             }
+            return total;
         }
         public static string getuserid(string strSource)
         {
@@ -223,8 +232,8 @@ namespace WinFormsApp4
             string strTrim = strSource.Replace("\t", "").Replace("\n", "").Replace("\r", "");
             Start = strTrim.IndexOf("<strong>", 0);
             end = strTrim.IndexOf("</strong>", 0);
-            result = "Họ và Tên: "+ strTrim.Substring(Start+8, end  - Start-8);
-            trim = strTrim.Remove(Start, end - Start+8 );
+            result = "Họ và Tên: " + strTrim.Substring(Start + 8, end - Start - 8);
+            trim = strTrim.Remove(Start, end - Start + 8);
             Start = trim.IndexOf("<strong>", 0);
             end = trim.IndexOf("</strong>", 0);
             result = result + "\nMã số sinh viên: " + trim.Substring(Start + 8, end - Start - 8);
@@ -241,6 +250,68 @@ namespace WinFormsApp4
             // result = strTrim.Substring(Start, 24);
             return result;
 
+        }
+        public static int delpre(subjects[] subject, string thissj)
+        {
+            int yes = 1;
+            for (int c = 0; c < subject.Length; c++)
+            {
+                if (string.IsNullOrEmpty(subject[c].Prerequisite) || subject[c].Done == 0)
+                    continue;
+
+                string[] prerequisites = subject[c].Prerequisite.Split(',');
+                //MessageBox.Show("s");
+                foreach (string prerequisite in prerequisites)
+                {
+                    if (!string.IsNullOrEmpty(prerequisite))
+                    {
+                        string prerequisiteId = prerequisite.Trim();
+                        //subjects prerequisiteSubject = subject.FirstOrDefault(s => s.Id == prerequisiteId);
+
+                        if (prerequisiteId == thissj)
+                            return yes = 0;
+
+                    }
+                }
+            }
+            return yes;
+        }
+
+        public static string hocky(int totalhk, int nambatdau)
+        {
+            string hocky;
+
+            switch (totalhk)
+            {
+                case int n when (n == 1):
+                    hocky = "Học kỳ 1 năm" + nambatdau.ToString();
+                    break;
+                case int n when (n >= 8.0 && n <= 8.9):
+                    hocky = "B+";
+                    break;
+                case int n when (n >= 7.0 && n <= 7.9):
+                    hocky = "B";
+                    break;
+                case int n when (n >= 6.5 && n <= 6.9):
+                    hocky = "C+";
+                    break;
+                case int n when (n >= 5.5 && n <= 6.4):
+                    hocky = "C";
+                    break;
+                case int n when (n >= 5.0 && n <= 5.4):
+                    hocky = "D+";
+                    break;
+                case int n when (n >= 4.0 && n <= 4.9):
+                    hocky = "D";
+                    break;
+                case int n when (n < 4.0):
+                    hocky = "F";
+                    break;
+                default:
+                    hocky = "Invalid mark";
+                    break;
+            }
+            return hocky;
         }
     }
 }

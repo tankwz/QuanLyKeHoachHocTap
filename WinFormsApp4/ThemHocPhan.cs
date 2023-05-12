@@ -27,7 +27,7 @@ namespace WinFormsApp4
 
             dataGridView1.Columns.Add(new DataGridViewCheckBoxColumn()
             { HeaderText = "Select", DataPropertyName = "Selected", Name = "Selected" });
-            dataGridView1.CellContentClick += dataGridView1_CellContentClick;
+            dataGridView1.CellValueChanged += dataGridView1_CellValueChanged;
             dataGridView1.Columns.Add("Id", "Mã học phần");
             dataGridView1.Columns.Add("Name", "Tên học phần");
             dataGridView1.Columns.Add("Credits", "Tín chỉ");
@@ -56,62 +56,246 @@ namespace WinFormsApp4
             dataGridView1.Columns["Recommend"].Width = 50;
             dataGridView1.Columns["Opentime"].Width = 50;
 
-            var filteredList2 = subject.Where(s => (s.Mandatory != "0") && (s.Done == 0)).OrderBy(s => s.Recommend).ToArray();
+            //var filteredList2 = subject.Where(s => (s.Mandatory != "0") && (s.Done == 0) && (s.Mandatory >0)).OrderBy(s => s.Recommend).ToArray();
+
+            var filteredList2 = subject
+    .Where(s => (s.Done == 0) && (s.Mandatory == "all" || (int.TryParse(s.Mandatory, out int mandatoryValue) && mandatoryValue > 0)))
+    .OrderBy(s => s.Recommend)
+    .ToArray();
+
 
             dataGridView1.DataSource = filteredList2;
             dataGridView1.BackgroundColor = Color.White;
             this.BackColor = Color.FromArgb(240, 244, 252);
 
+
+            dataGridView1.CellFormatting += (sender, e) =>
+            {
+
+                foreach (var sj in filteredList2)
+                {
+                    if (string.IsNullOrEmpty(sj.Prerequisite))
+                        continue;
+                    var selectedSubject = sj;
+
+                    string[] prerequisites = selectedSubject.Prerequisite.Split(',');
+                    //MessageBox.Show("s");
+                    foreach (string prerequisite in prerequisites)
+                    {
+                        if (!string.IsNullOrEmpty(prerequisite))
+                        {
+                            string prerequisiteId = prerequisite.Trim();
+                            subjects prerequisiteSubject = subject.FirstOrDefault(s => s.Id == prerequisiteId);
+                            if (prerequisiteSubject != null && (prerequisiteSubject.Done >= totalhk || prerequisiteSubject.Done == 0))
+                            {
+                                foreach (DataGridViewRow row in dataGridView1.Rows)
+                                {
+                                    if (dataGridView1.Rows[e.RowIndex].Cells["Id"].Value.ToString() == sj.Id)
+                                    {
+                                        // MessageBox.Show(sj.Id);
+                                        dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Red;
+                                        //   row.DefaultCellStyle.BackColor = Color.Red;
+                                        break; // Exit the loop once the row is found
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+            };
         }
         string[] unsat = new string[] { };
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+
+        private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            //   a++;
+            //MessageBox.Show(a.ToString());
 
             if (e.ColumnIndex == dataGridView1.Columns["Selected"].Index)
             {
                 var dataGridView1 = (DataGridView)sender;
                 DataGridViewCheckBoxCell chk = dataGridView1.Rows[e.RowIndex].Cells["Selected"] as DataGridViewCheckBoxCell;
-
-                //DataGridViewCheckBoxCell chk = (DataGridViewCheckBoxCell)row.Cells[1];
-
-                /* if (chkCell.Value == chkCell.FalseValue)
-                {
-                    MessageBox.Show("qwe");
-                    return;
-                }*/
-
                 var selectedSubject = dataGridView1.Rows[e.RowIndex].DataBoundItem as subjects;
-
-                string[] prerequisites = selectedSubject.Prerequisite.Split(',');
-                //MessageBox.Show("s");
-                string unsatisfiedPrerequisites = "";
-                foreach (string prerequisite in prerequisites)
+                if (chk.Value != null && (bool)chk.Value == true)
                 {
-                    if (!string.IsNullOrEmpty(prerequisite))
+                    //////////////////////////
+                    if (!string.IsNullOrEmpty(selectedSubject.Groupz))
                     {
-                        string prerequisiteId = prerequisite.Trim();
-                        subjects prerequisiteSubject = subject.FirstOrDefault(s => s.Id == prerequisiteId);
-                        if (prerequisiteSubject != null && (prerequisiteSubject.Done >= totalhk || prerequisiteSubject.Done == 0))
+
+                        if (int.Parse(selectedSubject.Mandatory) < 1)
                         {
-                            unsatisfiedPrerequisites += string.Format("{0} - {1}\n", prerequisiteId, prerequisiteSubject.Name);
-                            Array.Resize(ref unsat, unsat.Length + 1);
-                            unsat[unsat.Length - 1] = selectedSubject.Id;
+                            chk.Value = false;
+                        }
+                        string firstTwo = selectedSubject.Groupz.Substring(0, 2);
+                        string lastTwo = string.Empty;
+
+                        if (selectedSubject.Groupz.Length > 2)
+                            lastTwo = selectedSubject.Groupz.Substring(2, 2);
+
+                        // Iterate over the DataGridView rows
+
+                        if (!string.IsNullOrEmpty(lastTwo))
+                            foreach (DataGridViewRow row in dataGridView1.Rows)
+                            {
+                                if (row.Index == e.RowIndex)
+                                {
+
+                                    continue;
+                                }
+                                DataGridViewCheckBoxCell checkBoxCell = row.Cells["Selected"] as DataGridViewCheckBoxCell;
+                                if (checkBoxCell.Value == null || !(bool)checkBoxCell.Value)
+                                    continue;
+
+                                // Compare the group of the checked row with the group of the clicked subject
+                                subjects checkedSubject = row.DataBoundItem as subjects;
+                                if (checkedSubject != null && checkedSubject.Groupz.StartsWith(firstTwo))
+                                {
+                                    string checkedLastTwo = checkedSubject.Groupz.Substring(2, 2);
+                                    if (lastTwo != checkedLastTwo)
+                                    {
+                                        chk.Value = false;
+                                        MessageBox.Show("Học phần nằm cùng nhóm " + checkedSubject.Id.ToString() + " - " + checkedSubject.Name.ToString() + "đã được chọn", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    }
+                                }
+                            }
+                        if (!string.IsNullOrEmpty(lastTwo))
+                            foreach (DataGridViewRow row in dataGridView1.Rows)
+                        {
+                            if (row.Index == e.RowIndex)
+                            {
+
+                                continue;
+                            }
+            
+                            subjects checkedSubject = row.DataBoundItem as subjects;
+                            if (checkedSubject != null && checkedSubject.Groupz.StartsWith(firstTwo))
+                            {
+                                string checkedLastTwo = checkedSubject.Groupz.Substring(2, 2);
+                                if (lastTwo != checkedLastTwo)
+                                {
+                                       checkedSubject.Mandatory = "0";
+                                }
+                            }
+                        }
+                        bool showMessage = true;
+                        if (string.IsNullOrEmpty(lastTwo))
+                            foreach (DataGridViewRow row in dataGridView1.Rows)
+                            {
+                                DataGridViewCheckBoxCell checkBoxCell = row.Cells["Selected"] as DataGridViewCheckBoxCell;
+
+                                subjects checkedSubject = row.DataBoundItem as subjects;
+                                if (checkedSubject != null && checkedSubject.Groupz.StartsWith(firstTwo))
+                                {
+                                    //string checkedLastTwo = checkedSubject.Groupz.Substring(2, 2);
+                                    checkedSubject.Mandatory = (int.Parse(checkedSubject.Mandatory) - selectedSubject.Credits).ToString();
+                                    if (int.Parse(checkedSubject.Mandatory) < 0)
+                                    {
+                                        if (showMessage)
+                                        {
+                                            MessageBox.Show("Đã đủ số tín chỉ thuộc nhóm này");
+                                            showMessage = false; // Set the flag to false to prevent multiple message boxes
+
+                                        }
+
+                                    }
+                                }
+
+                            }
+
+                    }
+                    /////////////////////
+                    string[] prerequisites = selectedSubject.Prerequisite.Split(',');
+                    //MessageBox.Show("s");
+                    string unsatisfiedPrerequisites = "";
+                    foreach (string prerequisite in prerequisites)
+                    {
+                        if (!string.IsNullOrEmpty(prerequisite))
+                        {
+                            string prerequisiteId = prerequisite.Trim();
+                            subjects prerequisiteSubject = subject.FirstOrDefault(s => s.Id == prerequisiteId);
+                            if (prerequisiteSubject != null && (prerequisiteSubject.Done >= totalhk || prerequisiteSubject.Done == 0))
+                            {
+                                unsatisfiedPrerequisites += string.Format("{0} - {1}\n", prerequisiteId, prerequisiteSubject.Name);
+                                Array.Resize(ref unsat, unsat.Length + 1);
+                                unsat[unsat.Length - 1] = selectedSubject.Id;
+                            }
                         }
                     }
+                    if (!string.IsNullOrEmpty(unsatisfiedPrerequisites))
+                    {
+                        chk.Value = false;
+                        MessageBox.Show(string.Format("Môn học {0} - {1} chưa đáp ứng điều kiện tiên quyết:\n{2}",
+                                    selectedSubject.Id, selectedSubject.Name, unsatisfiedPrerequisites));
+                    }
                 }
-                if (!string.IsNullOrEmpty(unsatisfiedPrerequisites))
+                else
                 {
-                    // chk.Value = chk.FalseValue;
-                    //dataGridView1.Rows[e.RowIndex].Cells["Selected"].Selected = false;
-                    //MessageBox.Show(target);
-                    MessageBox.Show(string.Format("Môn học {0} - {1} chưa đáp ứng điều kiện tiên quyết:\n{2}",
-                                selectedSubject.Id, selectedSubject.Name, unsatisfiedPrerequisites));
-                }
+                    if (!string.IsNullOrEmpty(selectedSubject.Groupz))
+                    {
+                        string firstTwo = selectedSubject.Groupz.Substring(0, 2);
+                        string lastTwo = string.Empty;
 
+                        if (selectedSubject.Groupz.Length > 2)
+                            lastTwo = selectedSubject.Groupz.Substring(2, 2);
+
+                        // Iterate over the DataGridView rows
+
+                       /* if (!string.IsNullOrEmpty(lastTwo))
+                            foreach (DataGridViewRow row in dataGridView1.Rows)
+                            {
+                                if (row.Index == e.RowIndex)
+                                {
+                                    continue;
+                                }
+                                DataGridViewCheckBoxCell checkBoxCell = row.Cells["Selected"] as DataGridViewCheckBoxCell;
+
+                                // Compare the group of the checked row with the group of the clicked subject
+                                subjects checkedSubject = row.DataBoundItem as subjects;
+                                if (checkedSubject != null && checkedSubject.Groupz.StartsWith(firstTwo))
+                                {
+                                    string checkedLastTwo = checkedSubject.Groupz.Substring(2, 2);
+                                    if (lastTwo != checkedLastTwo)
+                                    {
+                                        checkedSubject.Mandatory = selectedSubject.Mandatory;
+                                    }
+                                }
+                            }
+                        */
+                        bool showMessage = true;
+                        if (string.IsNullOrEmpty(lastTwo))
+                            foreach (DataGridViewRow row in dataGridView1.Rows)
+                            {
+                                DataGridViewCheckBoxCell checkBoxCell = row.Cells["Selected"] as DataGridViewCheckBoxCell;
+
+                                subjects checkedSubject = row.DataBoundItem as subjects;
+                                if (checkedSubject != null && checkedSubject.Groupz.StartsWith(firstTwo))
+                                {
+                                    //string checkedLastTwo = checkedSubject.Groupz.Substring(2, 2);
+                                    checkedSubject.Mandatory = (int.Parse(checkedSubject.Mandatory) + selectedSubject.Credits).ToString();
+                                    if (int.Parse(checkedSubject.Mandatory) < 0)
+                                    {
+
+
+
+                                        if (showMessage)
+                                        {
+                                            MessageBox.Show("Đã đủ số tín chỉ thuộc nhóm này");
+                                            showMessage = false; // Set the flag to false to prevent multiple message boxes
+
+                                        }
+
+                                    }
+                                }
+
+                            }
+                    }
+                }
             }
 
         }
-
+        /*
         private void UncheckRowsWithUnsatisfiedPrerequisites(string[] unsat)
         {
             foreach (DataGridViewRow row in dataGridView1.Rows)
@@ -123,27 +307,23 @@ namespace WinFormsApp4
                 }
             }
         }
-
+        */
 
 
 
 
         List<string> selectedSubjects;
-        private void button1_Click(object sender, EventArgs e)
-        {
-        }
+
 
         private void button5_Click(object sender, EventArgs e)
         {
-            UncheckRowsWithUnsatisfiedPrerequisites(unsat);
+            //UncheckRowsWithUnsatisfiedPrerequisites(unsat);
             selectedSubjects = new List<string>();
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
                 var selectedCell = row.Cells["Selected"];
                 if (selectedCell != null && selectedCell.Value != null && (bool)selectedCell.Value)
                 {
-
-
                     var idCell = row.Cells["Id"];
                     if (idCell != null && idCell.Value != null)
                     {
@@ -152,17 +332,17 @@ namespace WinFormsApp4
                     }
                 }
             }
-            SelectedSubjectsSelected?.Invoke(this, selectedSubjects);
+            SelectedSubjectsSelected?.Invoke(this, selectedSubjects, totalhk);
             this.Close();
             form.Show();
         }
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            UncheckRowsWithUnsatisfiedPrerequisites(unsat);
+            // UncheckRowsWithUnsatisfiedPrerequisites(unsat);
         }
 
-        public delegate void SelectedSubjectsEventHandler(object sender, List<string> selectedSubjects);
+        public delegate void SelectedSubjectsEventHandler(object sender, List<string> selectedSubjects, int totalhk);
 
         public event SelectedSubjectsEventHandler SelectedSubjectsSelected;
 

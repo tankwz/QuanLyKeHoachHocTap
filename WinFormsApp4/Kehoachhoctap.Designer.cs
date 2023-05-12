@@ -40,11 +40,10 @@ namespace WinFormsApp4
             label2 = new Label();
             flowLayoutPanel1 = new FlowLayoutPanel();
             panel2 = new Panel();
+            btnthemhk = new Button();
             button6 = new Button();
             button4 = new Button();
-            button5 = new Button();
             button3 = new Button();
-            button2 = new Button();
             bordera = new Panel();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -128,16 +127,26 @@ namespace WinFormsApp4
             // panel2
             // 
             panel2.BorderStyle = BorderStyle.FixedSingle;
+            panel2.Controls.Add(btnthemhk);
             panel2.Controls.Add(button6);
             panel2.Controls.Add(button4);
-            panel2.Controls.Add(button5);
             panel2.Controls.Add(button3);
-            panel2.Controls.Add(button2);
             panel2.Location = new Point(1357, 113);
             panel2.Name = "panel2";
             panel2.Size = new Size(221, 731);
             panel2.TabIndex = 7;
             panel2.Paint += panel2_Paint;
+            // 
+            // btnthemhk
+            // 
+            btnthemhk.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
+            btnthemhk.Location = new Point(46, 146);
+            btnthemhk.Name = "btnthemhk";
+            btnthemhk.Size = new Size(142, 52);
+            btnthemhk.TabIndex = 10;
+            btnthemhk.Text = "Thêm HK";
+            btnthemhk.UseVisualStyleBackColor = true;
+            btnthemhk.Click += btnthemhk_Click;
             // 
             // button6
             // 
@@ -161,17 +170,6 @@ namespace WinFormsApp4
             button4.UseVisualStyleBackColor = true;
             button4.Click += button4_Click_1;
             // 
-            // button5
-            // 
-            button5.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
-            button5.Location = new Point(46, 309);
-            button5.Name = "button5";
-            button5.Size = new Size(142, 52);
-            button5.TabIndex = 7;
-            button5.Text = "Thêm HP";
-            button5.UseVisualStyleBackColor = true;
-            button5.Click += button5_Click;
-            // 
             // button3
             // 
             button3.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
@@ -182,17 +180,6 @@ namespace WinFormsApp4
             button3.Text = "Xóa HK";
             button3.UseVisualStyleBackColor = true;
             button3.Click += button3_Click;
-            // 
-            // button2
-            // 
-            button2.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
-            button2.Location = new Point(46, 137);
-            button2.Name = "button2";
-            button2.Size = new Size(142, 52);
-            button2.TabIndex = 4;
-            button2.Text = "Thêm HK";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click;
             // 
             // bordera
             // 
@@ -239,12 +226,11 @@ namespace WinFormsApp4
         private Panel panel2;
 
         private Panel bordera;
-        private Button button2;
         private Button button3;
-        private Button button5;
         private Label label2;
         private PictureBox pictureBox1;
         private Button button4;
         private Button button6;
+        private Button btnthemhk;
     }
 }

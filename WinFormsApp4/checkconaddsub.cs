@@ -9,7 +9,5 @@ namespace WinFormsApp4
     internal class checkconaddsub
     {
 
-
-
     }
 }
