@@ -405,6 +405,54 @@ namespace WinFormsApp4
 
                                     if (sj.Groupz.Length > 2)
                                         lastTwo = sj.Groupz.Substring(2, 2);
+                                    ////
+                                    if (!string.IsNullOrEmpty(lastTwo))
+                                    {
+                                        bool resetManatory = true;
+                                        foreach (subjects sj4 in subject)
+                                        {
+                                            if (sj4.Id == sj.Id)
+                                            {
+                                                continue;
+                                            }
+
+                                            if (sj4 != null && sj4.Groupz.StartsWith(firstTwo))
+                                            {
+                                                string checkedLastTwo = sj4.Groupz.Substring(2, 2);
+                                                if (lastTwo == checkedLastTwo)
+                                                {
+                                                    if (sj4.Done > 0)
+                                                    {
+                                                        resetManatory = false;
+                                                   //     MessageBox.Show("no");
+                                                    }
+                                                }
+
+                                            }
+                                        }
+                                        foreach (subjects sj3 in subject)
+                                        {
+                                            if (sj3.Id == sj.Id)
+                                            {
+                                                continue;
+                                            }
+                                            if (sj3 != null && sj3.Groupz.StartsWith(firstTwo))
+                                            {
+                                                string checkedLastTwo = sj3.Groupz.Substring(2, 2);
+
+
+                                                if ((lastTwo != checkedLastTwo) && resetManatory)
+                                                {
+
+                                                   // MessageBox.Show("yes");
+                                                    // MessageBox.Show(sj3.Name);
+                                                    sj3.Mandatory = sj.Mandatory;
+
+                                                }
+                                            }
+                                        }
+                                    }
+                                    ///
                                     if (string.IsNullOrEmpty(lastTwo))
                                         foreach (subjects sj2 in subject)
                                         {
@@ -413,12 +461,12 @@ namespace WinFormsApp4
                                            // MessageBox.Show(sj2.Name);
                                             if (sj2 != null && sj2.Groupz.StartsWith(firstTwo))
                                             {
+                                              // MessageBox.Show(sj.Credits.ToString());
                                                 sj2.Mandatory = (int.Parse(sj2.Mandatory) + sj.Credits).ToString();
+                                                sj.Mandatory = sj2.Mandatory;
                                             }
-
                                         }
                                 }
-
                                 int temptotalhk = totalhk;
                                 int tempdone = sj.Done;
                                 { }
@@ -903,9 +951,19 @@ namespace WinFormsApp4
         private void button3_Click(object sender, EventArgs e)
         {
 
-            string dataGridViewName = "dataz" + totalhk;
-            Control dataGridViewControl = flowLayoutPanel1.Controls.Find(dataGridViewName, false).FirstOrDefault();
 
+            string panelNameToRemove = "panelz" + totalhk;
+            Control panelToRemove = flowLayoutPanel1.Controls.Find(panelNameToRemove, false).FirstOrDefault();
+            if(panelToRemove == null)
+            {
+                MessageBox.Show("Không thể xóa học kỳ trước đấy");
+                return;
+            }
+            
+            string dataGridViewName = "dataz" + totalhk;
+            
+            Control dataGridViewControl = panelToRemove.Controls.Find(dataGridViewName, false).FirstOrDefault();
+            
             if (dataGridViewControl != null && dataGridViewControl is DataGridView)
             {
                 DataGridView dataGridView = (DataGridView)dataGridViewControl;
