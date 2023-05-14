@@ -22,6 +22,13 @@ namespace WinFormsApp4
                                "VALUES (@st_id, @orderz, @count, @hknamhoc, @marktext, @mark, @name, @id, @credits, @get)";
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
+                    string deleteQuery = "DELETE FROM studentSubjects WHERE st_id = @st_id";
+                    using (SqlCommand deleteCmd = new SqlCommand(deleteQuery, conn))
+                    {
+                        deleteCmd.Parameters.AddWithValue("@st_id", studentlist0[1].St_id);
+                        MessageBox.Show(studentlist0[1].St_id);
+                        deleteCmd.ExecuteNonQuery();
+                    }
                     foreach (studentSubjects ss in studentlist0)
                     {
                         if (ss.Id == null) ss.Id = " ";

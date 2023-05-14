@@ -11,6 +11,7 @@ using System.IO;
 
 using System.Linq;
 using System.Numerics;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -244,10 +245,11 @@ namespace WinFormsApp4
             }
         }
 
-
+        int totalcre = 0;
+        int totalbloatcre = 0;
         private int addPanel1(int p, subjects[] subject)
         {
-
+            int creditsCurrent = 0;
             //spawn table for new semester
             Panel panel = new Panel();
             panel.Height = 1000;
@@ -310,16 +312,18 @@ namespace WinFormsApp4
             dataGridView.Columns.Add("Credits", "Tín chỉ");
             dataGridView.Columns.Add("Prerequisite", "Tiên quyết");
             dataGridView.Columns.Add("Groupz", "Nhóm");
-            dataGridView.Columns.Add("Mandatory", "Bắt buộc");
-            //dataGridView.Columns.Add("Done", "Hoàn thành");
+            // dataGridView.Columns.Add("Mandatory", "Bắt buộc");
             dataGridView.Columns.Add("Mark", "Điểm");
+            dataGridView.Columns.Add("Marktext", "Điểm chữ");
+            //dataGridView.Columns.Add("Done", "Hoàn thành");
             dataGridView.Columns["Id"].DataPropertyName = "Id";
             dataGridView.Columns["Name"].DataPropertyName = "Name";
             dataGridView.Columns["Credits"].DataPropertyName = "Credits";
             dataGridView.Columns["Prerequisite"].DataPropertyName = "Prerequisite";
             dataGridView.Columns["Groupz"].DataPropertyName = "Groupz";
-            dataGridView.Columns["Mandatory"].DataPropertyName = "Mandatory";
+            //     dataGridView.Columns["Mandatory"].DataPropertyName = "Mandatory";
             dataGridView.Columns["Mark"].DataPropertyName = "Mark";
+            dataGridView.Columns["Marktext"].DataPropertyName = "Marktext";
             // dataGridView.Columns["Done"].DataPropertyName = "Done";
 
             dataGridView.Columns["Id"].Width = 100;
@@ -327,12 +331,13 @@ namespace WinFormsApp4
             dataGridView.Columns["Credits"].Width = 80;
             dataGridView.Columns["Prerequisite"].Width = 120;
             dataGridView.Columns["Groupz"].Width = 120;
-            dataGridView.Columns["Mandatory"].Width = 80;
+            //  dataGridView.Columns["Mandatory"].Width = 80;
             dataGridView.Columns["Mark"].Width = 80;
+            dataGridView.Columns["Marktext"].Width = 80;
             // dataGridView.Columns["Done"].Width = 80;
             dataGridView.Location = new Point(dataGridView.Location.X + 100, dataGridView.Location.Y + 60);
             dataGridView.Width = 1070;
-            // dataGridView.BackgroundColor = Color.White;
+            dataGridView.BackgroundColor = Color.White;
             dataGridView.BorderStyle = BorderStyle.None;
             var heightt = 400;
             dataGridView.Height = heightt;
@@ -345,15 +350,23 @@ namespace WinFormsApp4
                 if (sj.Done == totalhk)
                 {
                     DataGridViewRow row = new DataGridViewRow();
-
                     row.Cells.Add(new DataGridViewCheckBoxCell());
-
                     row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Id });
                     row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Name });
                     row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Credits });
                     row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Prerequisite });
                     row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Groupz });
-                    row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Mandatory });
+
+                    row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Mark });
+
+                    row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Marktext });
+
+                    if (!string.IsNullOrEmpty(sj.Mark) && float.TryParse(sj.Mark, out float mark) && mark < 4)
+                    {
+                        // Set the row background color to red
+                        row.DefaultCellStyle.BackColor = Color.Red;
+                    }
+                    //   row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Mandatory });
                     //   row.Cells.Add(new DataGridViewTextBoxCell() { Value = sj.Done });
 
                     dataGridView.Rows.Add(row);
@@ -376,8 +389,15 @@ namespace WinFormsApp4
             deleteButton.BackColor = Color.FromArgb(56, 114, 178);
             deleteButton.Width = 180;
             deleteButton.Height = 35;
-            deleteButton.Location = new Point(panel.Width - 920, panel.Height - 45);
+            deleteButton.Location = new Point(panel.Width - 1140, panel.Height - 45);
             List<DataGridViewRow> rowsToRemove = new List<DataGridViewRow>();
+
+            Label lbcredits = new Label();
+            lbcredits.Font = new Font("Segoe UI", 10);
+            lbcredits.AutoSize = true;
+            panel.Controls.Add(lbcredits);
+            lbcredits.Location = new Point(panel.Width - 280, panel.Height - 40);
+
 
             // Attach the EventHandler to the deleteButton
             deleteButton.Click += new EventHandler((sender, e) =>
@@ -389,10 +409,11 @@ namespace WinFormsApp4
                         // MessageBox.Show(row.Cells["Name"].Value.ToString());
                         if (filter.delpre(subject, row.Cells["Id"].Value.ToString()) == 0)
                         {
-                            MessageBox.Show("kẹt");
+                            MessageBox.Show("Không thể xóa vì tồn tại học phần phụ thuộc vào học phần này phía dưới");
                             return;
                         }
 
+                        creditsCurrent = 0;
                         foreach (subjects sj in subject)
                         {
 
@@ -424,7 +445,7 @@ namespace WinFormsApp4
                                                     if (sj4.Done > 0)
                                                     {
                                                         resetManatory = false;
-                                                   //     MessageBox.Show("no");
+                                                        //     MessageBox.Show("no");
                                                     }
                                                 }
 
@@ -444,7 +465,7 @@ namespace WinFormsApp4
                                                 if ((lastTwo != checkedLastTwo) && resetManatory)
                                                 {
 
-                                                   // MessageBox.Show("yes");
+                                                    // MessageBox.Show("yes");
                                                     // MessageBox.Show(sj3.Name);
                                                     sj3.Mandatory = sj.Mandatory;
 
@@ -457,11 +478,11 @@ namespace WinFormsApp4
                                         foreach (subjects sj2 in subject)
                                         {
                                             //DataGridViewCheckBoxCell checkBoxCell = row.Cells["Selected"] as DataGridViewCheckBoxCell;
-                                           // subjects checkedSubject = row.DataBoundItem as subjects;
-                                           // MessageBox.Show(sj2.Name);
+                                            // subjects checkedSubject = row.DataBoundItem as subjects;
+                                            // MessageBox.Show(sj2.Name);
                                             if (sj2 != null && sj2.Groupz.StartsWith(firstTwo))
                                             {
-                                              // MessageBox.Show(sj.Credits.ToString());
+                                                // MessageBox.Show(sj.Credits.ToString());
                                                 sj2.Mandatory = (int.Parse(sj2.Mandatory) + sj.Credits).ToString();
                                                 sj.Mandatory = sj2.Mandatory;
                                             }
@@ -472,6 +493,8 @@ namespace WinFormsApp4
                                 { }
 
                                 sj.Done = 0;
+
+                                totalcre -= sj.Credits;
                                 for (int z = tempdone + 1; z <= temptotalhk; z++)
                                 {
                                     xoa();
@@ -479,14 +502,19 @@ namespace WinFormsApp4
                                 for (int z = tempdone + 1; z <= temptotalhk; z++)
                                 {
                                     them();
+
                                 }
-
-
                             }
-                        }
 
+                            if (sj.Done == currenthk)
+                                creditsCurrent += sj.Credits;
+
+                            lbcredits.Text = "Số tín chỉ học kỳ: " + creditsCurrent.ToString();
+                        }
                         rowsToRemove.Add(row);
+                        currentcredit.Text = totalcre.ToString();
                     }
+
                 }
 
                 // Remove the selected rows from the dataGridView
@@ -507,14 +535,14 @@ namespace WinFormsApp4
             addsubject.BackColor = Color.FromArgb(56, 114, 178);
             addsubject.Width = 180;
             addsubject.Height = 35;
-            addsubject.Location = new Point(panel.Width - 470, panel.Height - 45);
+            addsubject.Location = new Point(panel.Width - 815, panel.Height - 45);
             //List<DataGridViewRow> rowsToRemove = new List<DataGridViewRow>();
 
             // Attach the EventHandler to the deleteButton
             addsubject.Click += new EventHandler((sender, e) =>
             {
                 this.Hide();
-                ThemHocPhan thp = new ThemHocPhan(subject, currenthk, this);
+                ThemHocPhan thp = new ThemHocPhan(subject, currenthk, this, creditsCurrent);
                 thp.SelectedSubjectsSelected += Thp_SelectedSubjectsSelected;
                 thp.ShowDialog();
             });
@@ -525,7 +553,209 @@ namespace WinFormsApp4
             thp.SelectedSubjectsSelected += Thp_SelectedSubjectsSelected;
             thp.ShowDialog();*/
             dataGridView.AllowUserToAddRows = false;
+            foreach (subjects sj in subject)
+            {
+                if (sj.Done == currenthk)
+                    creditsCurrent += sj.Credits;
+            }
+            dataGridView.CellBeginEdit += (sender, e) =>
+            {
+                string columnName = dataGridView.Columns[e.ColumnIndex].Name;
+                if (columnName != "Mark" && columnName != "Selected")
+                {
+                    e.Cancel = true;
+                }
+            };
+            lbcredits.Text = "Số tín chỉ học kỳ: " + creditsCurrent.ToString();
 
+
+            System.Windows.Forms.Button calculateButton = new System.Windows.Forms.Button();
+            calculateButton.Text = "Cập nhật điểm";
+            calculateButton.Font = new Font("Segoe UI", 11);
+            calculateButton.ForeColor = Color.White;
+            calculateButton.BackColor = Color.FromArgb(56, 114, 178);
+            calculateButton.Width = 180;
+            calculateButton.Height = 35;
+            calculateButton.Location = new Point(panel.Width - 500 /*420*/, panel.Height - 45);
+            calculateButton.Click += new EventHandler((sender, e) =>
+            {
+                bool allMarksInputted = true;
+                bool invalidMarksFound = false;
+
+                foreach (DataGridViewRow row in dataGridView.Rows)
+                {
+                    object markValue = row.Cells["Mark"].Value;
+                    if (markValue == null || string.IsNullOrEmpty(markValue.ToString()))
+                    {
+                        allMarksInputted = false;
+                        break;
+                    }
+                    else
+                    {
+                        if (!double.TryParse(markValue.ToString(), out double mark) || mark < 0 || mark > 10)
+                        {
+                            invalidMarksFound = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (true)
+                {
+                    if (invalidMarksFound)
+                    {
+                        MessageBox.Show("Vui lòng nhập đúng định dạng điểm");
+                    }
+                    else
+                    {
+
+                        totalbloatcre = 0;
+                        foreach (DataGridViewRow row in dataGridView.Rows)
+                        {
+                            foreach (subjects sj2 in subject)
+                            {
+
+                                if (sj2.Id == row.Cells["Id"].Value.ToString() && row.Cells["Mark"].Value != null)
+                                {
+
+                                    string markValue = row.Cells["Mark"].Value.ToString();
+
+                                    string markText = filter.gettextmark(markValue);
+                                    sj2.Mark = markValue;
+                                    sj2.Marktext = markText;
+                                    totalbloatcre += sj2.Credits;
+                                    if (double.Parse(sj2.Mark) < 4)
+                                    {
+                                        totalbloatcre -= sj2.Credits;
+                                        MessageBox.Show("Học phần " + sj2.Name + " có điểm dưới 4, vui lòng xóa ra khỏi kế hoạch học tập và cập nhật lại");
+                                    }
+
+                                }
+
+                            }
+
+                        }
+                        int earnedcre = 0;
+                        double earnedmmark = 0;
+                        foreach (subjects sj2 in subject)
+                        {
+                            if (sj2.Marktext != null)
+                                switch (sj2.Marktext.ToUpper())
+                                {
+                                    case "A":
+                                        earnedmmark += sj2.Credits * 4;
+                                        earnedcre += sj2.Credits;
+                                        if (sj2.Name.Substring(sj2.Name.Length - 3, 3) == "(*)")
+                                        {
+                                            earnedmmark -= sj2.Credits * 4;
+                                            earnedcre -= sj2.Credits;
+                                        };
+                                        break;
+                                    case "B+":
+                                        earnedmmark += sj2.Credits * 3.5;
+                                        earnedcre += sj2.Credits;
+                                        if (sj2.Name.Substring(sj2.Name.Length - 3, 3) == "(*)")
+                                        {
+                                            earnedmmark -= sj2.Credits * 3.5;
+                                            earnedcre -= sj2.Credits;
+                                        };
+                                        break;
+                                    case "B":
+                                        earnedmmark += sj2.Credits * 3;
+                                        earnedcre += sj2.Credits;
+                                        if (sj2.Name.Substring(sj2.Name.Length - 3, 3) == "(*)")
+                                        {
+                                            earnedmmark -= sj2.Credits * 3;
+                                            earnedcre -= sj2.Credits;
+                                        };
+                                        break;
+                                    case "C+":
+                                        earnedmmark += sj2.Credits * 2.5;
+                                        earnedcre += sj2.Credits;
+                                        if (sj2.Name.Substring(sj2.Name.Length - 3, 3) == "(*)")
+                                        {
+                                            earnedmmark -= sj2.Credits * 2.5;
+                                            earnedcre -= sj2.Credits;
+                                        };
+                                        break;
+                                    case "C":
+                                        earnedmmark += sj2.Credits * 2;
+                                        earnedcre += sj2.Credits;
+                                        if (sj2.Name.Substring(sj2.Name.Length - 3, 3) == "(*)")
+                                        {
+                                            earnedmmark -= sj2.Credits * 2;
+                                            earnedcre -= sj2.Credits;
+                                        };
+                                        break;
+                                    case "D+":
+                                        earnedmmark += sj2.Credits * 1.5;
+                                        earnedcre += sj2.Credits;
+                                        if (sj2.Name.Substring(sj2.Name.Length - 3, 3) == "(*)")
+                                        {
+                                            earnedmmark -= sj2.Credits * 1.5;
+                                            earnedcre -= sj2.Credits;
+                                        };
+                                        break;
+                                    case "D":
+                                        earnedmmark += sj2.Credits * 1;
+                                        earnedcre += sj2.Credits;
+                                        if (sj2.Name.Substring(sj2.Name.Length - 3, 3) == "(*)")
+                                        {
+                                            earnedmmark -= sj2.Credits * 1;
+                                            earnedcre -= sj2.Credits;
+                                        };
+                                        break;
+                                    case "F":
+                                        break;
+                                    case "W":
+                                        break;
+                                    default:
+                                        break;
+                                }
+                        }
+                        earnedcredits.Text = totalbloatcre.ToString();
+                        currentgpa.Text = (earnedmmark / earnedcre).ToString();
+
+                        double remaincre = 135 - earnedcre;
+                        //double currentgpa2 = earnedmmark / earnedcre;
+                        //double avg_sj_mark = 3.6;
+                        //  3.6 = (remaincre * X + earnedmmark ) / (earnedcre + remaincre) ;
+                        double desiremark36 = (3.6 * earnedcre + 3.6 * remaincre - earnedmmark) / remaincre;
+                        double desiremark32 = (3.2 * earnedcre + 3.2 * remaincre - earnedmmark) / remaincre;
+                        double desiremark25 = (2 * earnedcre + 2.5 * remaincre - earnedmmark) / remaincre;
+                        double desiremark2 = (2.5 * earnedcre + 2 * remaincre - earnedmmark) / remaincre;
+                        // double remainingmmark = desiredmmark - earnedmmark;
+                        //     avg_sj_mark = remainingmmark / remaincre;
+                        string formattedDesiremark36 = desiremark36.ToString("0.00");  // Format the desiremark
+                        string formattedDesiremark32 = desiremark32.ToString("0.00");
+                        string formattedDesiremark25 = desiremark25.ToString("0.00");
+                        string formattedDesiremark2 = desiremark2.ToString("0.00");
+                        gpacal.Text = formattedDesiremark36 + "/" + formattedDesiremark32 + "/" + formattedDesiremark25 + "/" + formattedDesiremark2;
+                        int temptotalhk = totalhk;
+                        ////int tempdone = sj.Done;
+                        //  sj.Done = 0;
+                        for (int z = currenthk; z <= temptotalhk; z++)
+                        {
+                            xoa();
+                        }
+
+                        them();
+                        flowLayoutPanel1.AutoScrollPosition = new Point(0, int.MaxValue);
+                        for (int z = currenthk + 1; z <= temptotalhk; z++)
+                        {
+                            them();
+                        }
+
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Vui lòng nhập điểm cho tất cả các học kỳ");
+                }
+            });
+
+            panel.Controls.Add(calculateButton);
+            /*135*/
             return p;
         }
 
@@ -771,7 +1001,7 @@ namespace WinFormsApp4
             if (textBox1.Text == "")
                 return;
             string file = System.IO.File.ReadAllText(filehtml.FileName);
-
+            userinfor.Text = filter.getuserid(file);
             /*
             for (int u = 0; u < 90; ++u)
             {
@@ -865,7 +1095,9 @@ namespace WinFormsApp4
             totalhk = Int32.Parse(StudentList[0].Name);
             currentyear = StudentList[total].Hknamhoc;
             // MessageBox.Show(currentyear);
+
             totalhkfix = totalhk;
+
             //string name = filter.getuserid(file);
             //label2.Text = name;
             // MessageBox.Show("first" + totalhk);
@@ -883,6 +1115,24 @@ namespace WinFormsApp4
             subject = initiateData.data(studentlist0, subject, "", ref total);
 
             this.BackColor = Color.FromArgb(240, 244, 252);
+            totalhk++;
+            foreach (subjects sj in subject)
+            {
+                if (sj.Recommend == totalhk)
+                    if (sj.Groupz == "")
+                    {
+                        sj.Done = sj.Recommend;
+                        totalcre += sj.Credits;
+                    }
+            }
+
+            currentcredit.Text = totalcre.ToString();
+            //  xoa();
+
+            totalhk--;
+            them();
+
+            flowLayoutPanel1.AutoScrollPosition = new Point(0, int.MaxValue);
 
         }
 
@@ -954,16 +1204,16 @@ namespace WinFormsApp4
 
             string panelNameToRemove = "panelz" + totalhk;
             Control panelToRemove = flowLayoutPanel1.Controls.Find(panelNameToRemove, false).FirstOrDefault();
-            if(panelToRemove == null)
+            if (panelToRemove == null)
             {
                 MessageBox.Show("Không thể xóa học kỳ trước đấy");
                 return;
             }
-            
+
             string dataGridViewName = "dataz" + totalhk;
-            
+
             Control dataGridViewControl = panelToRemove.Controls.Find(dataGridViewName, false).FirstOrDefault();
-            
+
             if (dataGridViewControl != null && dataGridViewControl is DataGridView)
             {
                 DataGridView dataGridView = (DataGridView)dataGridViewControl;
@@ -1019,9 +1269,8 @@ namespace WinFormsApp4
                     {
                         // MessageBox.Show(sj.Id);
                         sj.Done = currenthk;
+                        totalcre += sj.Credits;
                         // sj.Mandatory = st.man
-
-
 
 
 
@@ -1048,12 +1297,14 @@ namespace WinFormsApp4
             {
                 them();
             }
+
+            currentcredit.Text = totalcre.ToString();
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
             this.Hide();
-            ThemHocPhan thp = new ThemHocPhan(subject, totalhk, this);
+            ThemHocPhan thp = new ThemHocPhan(subject, totalhk, this, 0);
             thp.SelectedSubjectsSelected += Thp_SelectedSubjectsSelected;
             thp.ShowDialog();
         }
@@ -1074,9 +1325,31 @@ namespace WinFormsApp4
 
         private void button6_Click(object sender, EventArgs e)
         {
+
+
+
+
+
+
+            /*
+           int total = 0;
+           subject = initiateData.data(studentlist0, subject, file, ref total);
+           // int newSize = 60;
+           studentSubjects[] StudentList = new studentSubjects[total + 1];
+           Array.Copy(studentlist0, StudentList, total + 1);
+           //studentlist0 = null;
+           addPanel(Int32.Parse(StudentList[0].Name), StudentList);
+           totalhk = Int32.Parse(StudentList[0].Name);
+           currentyear = StudentList[total].Hknamhoc;
+           // MessageBox.Show(currentyear);
+
+           totalhkfix = totalhk;*/
+
+
             studentSubjects[] studentlist1 = new studentSubjects[90];
             getbangdiem gea = new getbangdiem();
             studentlist1 = gea.GetStudentSubjects(Mssv);
+
             if (studentlist1 != null)
             /*  for (int i = totalhkfix; i<totalhk; i++)
               {
@@ -1088,6 +1361,92 @@ namespace WinFormsApp4
                 addPanel(Int32.Parse(studentlist1[0].Name), studentlist1);
                 totalhk = Int32.Parse(studentlist1[0].Name);
                 studentlist0 = studentlist1;
+
+
+                int total = 0;
+                subject = SubjectDatabaseConnection.connectdata();
+
+                for (int a = 0; a < studentlist0.Length; a++)
+                {
+                    if (!(studentlist0[a].Id == "HCVHT"))
+                        studentlist0[a].Get = "*";
+                    studentlist0[a].Marktext = filter.gettextmark(studentlist0[a].Mark);
+                    if (studentlist0[a].Id == "HCVHT")
+                    {
+                        studentlist0[a].Name = "Cố vấn học tập sinh hoạt lớp";
+                        studentlist0[a].Mark = "";
+                        studentlist0[a].Id = "SHCVHT";
+                    }
+                    if (studentlist0[a].Mark == "Vắn") studentlist0[a].Mark = "Vắng";
+                    if (studentlist0[a].Mark == "Rút") studentlist0[a].Mark = "Rút-HP";
+                    if (studentlist0[a].Mark == "10.") studentlist0[a].Mark = "10.0";
+                    for (int b = 0; b < subject.Length; b++)
+                    {
+                        if (subject[b].Id == studentlist0[a].Id && subject[b].Id != null)
+                        {
+                            studentlist0[a].Name = subject[b].Name;
+                            studentlist0[a].Credits = subject[b].Credits;
+                            subject[b].Done = 1;
+                            subject[b].Mark = studentlist0[a].Mark;
+                            //MessageBox.Show("here");
+                        }
+                    }
+                }
+                for (int c = 0; c < subject.Length; c++)
+                {
+                    if (string.IsNullOrEmpty(subject[c].Groupz))
+                        continue;
+
+                    string twofirst = subject[c].Groupz.Substring(0, 2);
+                    string twolast = string.Empty;
+
+                    if (subject[c].Groupz.Length > 2)
+                        twolast = subject[c].Groupz.Substring(2, 2);
+
+                    if (subject[c].Done == 1)
+                    {
+                        for (int d = 0; d < subject.Length; d++)
+                        {
+                            if (string.IsNullOrEmpty(subject[d].Groupz))
+                                continue;
+                            if (subject[d].Groupz.Length > 2 && subject[d].Groupz.Substring(0, 2) == twofirst)
+                            {
+                                if (subject[d].Groupz.Substring(2, 2) == twolast)
+                                    subject[d].Mandatory = (int.Parse(subject[d].Mandatory) - subject[c].Credits).ToString();
+                            }
+                            else if (subject[d].Groupz == twofirst)
+                            {
+                                subject[d].Mandatory = (int.Parse(subject[d].Mandatory) - subject[c].Credits).ToString();
+                            }
+                        }
+                    }
+                }
+                string twofirst2 = "";
+                for (int f = 0; f < subject.Length; f++)
+                {
+                    if (subject[f].Mandatory == "all") continue;
+                    if (subject[f].Groupz.Length > 2 && (int.Parse(subject[f].Mandatory) < 1))
+                        twofirst2 = subject[f].Groupz.Substring(0, 2);
+                    for (int g = 0; g < subject.Length; g++)
+                    {
+                        if (subject[g].Groupz.Length < 2) continue;
+                        if (subject[g].Groupz.Substring(0, 2) == twofirst2)
+                            subject[g].Mandatory = "0";
+                    }
+                }
+                // dataGridView1.DataSource = filteredList;
+                if (studentlist0[0].Name == null) studentlist0[0].Name = 0.ToString();
+                // int newSize = 60;
+                studentSubjects[] StudentList = new studentSubjects[total + 1];
+                Array.Copy(studentlist0, StudentList, total + 1);
+                //studentlist0 = null;
+                //     addPanel(Int32.Parse(StudentList[0].Name), StudentList);
+                //     totalhk = Int32.Parse(StudentList[0].Name);
+                currentyear = StudentList[total].Hknamhoc;
+                // MessageBox.Show(currentyear);
+
+                totalhkfix = totalhk;
+
             }
             else MessageBox.Show("Không có dữ liệu trùng khớp với mã sinh viên");
         }
@@ -1103,6 +1462,34 @@ namespace WinFormsApp4
             them();
 
             flowLayoutPanel1.AutoScrollPosition = new Point(0, int.MaxValue);
+        }
+
+        private void btnredhk_Click(object sender, EventArgs e)
+        {
+            if (totalhk >= 27)
+            {
+                MessageBox.Show("Đã vượt học kỳ cho phép");
+                return;
+            }
+            totalhk++;
+            foreach (subjects sj in subject)
+            {
+                if (sj.Recommend == totalhk && sj.Done == 0)
+                    if (sj.Groupz == "")
+                    {
+                        sj.Done = sj.Recommend;
+                        totalcre += sj.Credits;
+                    }
+            }
+
+            currentcredit.Text = totalcre.ToString();
+            //  xoa();
+
+            totalhk--;
+            them();
+
+            flowLayoutPanel1.AutoScrollPosition = new Point(0, int.MaxValue);
+
         }
     }
 }

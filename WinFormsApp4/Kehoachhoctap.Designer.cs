@@ -35,11 +35,21 @@ namespace WinFormsApp4
             filehtml = new OpenFileDialog();
             textBox1 = new TextBox();
             panel1 = new Panel();
+            userinfor = new Label();
             label1 = new Label();
             pictureBox1 = new PictureBox();
             label2 = new Label();
             flowLayoutPanel1 = new FlowLayoutPanel();
             panel2 = new Panel();
+            label6 = new Label();
+            gpacal = new Label();
+            label5 = new Label();
+            label4 = new Label();
+            label3 = new Label();
+            currentgpa = new Label();
+            earnedcredits = new Label();
+            currentcredit = new Label();
+            btnredhk = new Button();
             btnthemhk = new Button();
             button6 = new Button();
             button4 = new Button();
@@ -73,6 +83,7 @@ namespace WinFormsApp4
             // panel1
             // 
             panel1.BorderStyle = BorderStyle.FixedSingle;
+            panel1.Controls.Add(userinfor);
             panel1.Controls.Add(label1);
             panel1.Controls.Add(pictureBox1);
             panel1.Controls.Add(label2);
@@ -84,6 +95,16 @@ namespace WinFormsApp4
             panel1.Size = new Size(1572, 106);
             panel1.TabIndex = 5;
             panel1.Paint += panel1_Paint;
+            // 
+            // userinfor
+            // 
+            userinfor.AutoSize = true;
+            userinfor.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            userinfor.Location = new Point(1144, 4);
+            userinfor.Name = "userinfor";
+            userinfor.Size = new Size(104, 23);
+            userinfor.TabIndex = 5;
+            userinfor.Text = "place holder";
             // 
             // label1
             // 
@@ -127,6 +148,15 @@ namespace WinFormsApp4
             // panel2
             // 
             panel2.BorderStyle = BorderStyle.FixedSingle;
+            panel2.Controls.Add(label6);
+            panel2.Controls.Add(gpacal);
+            panel2.Controls.Add(label5);
+            panel2.Controls.Add(label4);
+            panel2.Controls.Add(label3);
+            panel2.Controls.Add(currentgpa);
+            panel2.Controls.Add(earnedcredits);
+            panel2.Controls.Add(currentcredit);
+            panel2.Controls.Add(btnredhk);
             panel2.Controls.Add(btnthemhk);
             panel2.Controls.Add(button6);
             panel2.Controls.Add(button4);
@@ -137,10 +167,106 @@ namespace WinFormsApp4
             panel2.TabIndex = 7;
             panel2.Paint += panel2_Paint;
             // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            label6.Location = new Point(10, 152);
+            label6.Name = "label6";
+            label6.Size = new Size(173, 92);
+            label6.TabIndex = 16;
+            label6.Text = "Để đạt được loại \r\nxuất sắt/giỏi/ khá\r\ncác môn còn lại phải \r\nlớn hơn hoặc bằng:";
+            label6.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // gpacal
+            // 
+            gpacal.AutoSize = true;
+            gpacal.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            gpacal.Location = new Point(39, 266);
+            gpacal.Name = "gpacal";
+            gpacal.Size = new Size(27, 23);
+            gpacal.TabIndex = 15;
+            gpacal.Text = "ec";
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            label5.Location = new Point(10, 99);
+            label5.Name = "label5";
+            label5.Size = new Size(108, 23);
+            label5.TabIndex = 14;
+            label5.Text = "GPA hiện tại:";
+            label5.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            label4.Location = new Point(6, 60);
+            label4.Name = "label4";
+            label4.Size = new Size(175, 23);
+            label4.TabIndex = 13;
+            label4.Text = "Số tín chỉ hoàn thành";
+            label4.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            label3.Location = new Point(10, 25);
+            label3.Name = "label3";
+            label3.Size = new Size(141, 23);
+            label3.TabIndex = 12;
+            label3.Text = "Số tín chỉ dự tính";
+            label3.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // currentgpa
+            // 
+            currentgpa.AutoSize = true;
+            currentgpa.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            currentgpa.Location = new Point(174, 99);
+            currentgpa.Name = "currentgpa";
+            currentgpa.Size = new Size(28, 23);
+            currentgpa.TabIndex = 7;
+            currentgpa.Text = "cg";
+            // 
+            // earnedcredits
+            // 
+            earnedcredits.AutoSize = true;
+            earnedcredits.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            earnedcredits.Location = new Point(180, 60);
+            earnedcredits.Name = "earnedcredits";
+            earnedcredits.Size = new Size(27, 23);
+            earnedcredits.TabIndex = 6;
+            earnedcredits.Text = "ec";
+            // 
+            // currentcredit
+            // 
+            currentcredit.AutoSize = true;
+            currentcredit.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            currentcredit.Location = new Point(179, 25);
+            currentcredit.Name = "currentcredit";
+            currentcredit.Size = new Size(26, 23);
+            currentcredit.TabIndex = 6;
+            currentcredit.Text = "cc";
+            currentcredit.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // btnredhk
+            // 
+            btnredhk.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
+            btnredhk.Location = new Point(14, 481);
+            btnredhk.Name = "btnredhk";
+            btnredhk.Size = new Size(191, 52);
+            btnredhk.TabIndex = 11;
+            btnredhk.Text = "Thêm theo mẫu";
+            btnredhk.UseVisualStyleBackColor = true;
+            btnredhk.Click += btnredhk_Click;
+            // 
             // btnthemhk
             // 
             btnthemhk.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
-            btnthemhk.Location = new Point(46, 146);
+            btnthemhk.Location = new Point(39, 322);
             btnthemhk.Name = "btnthemhk";
             btnthemhk.Size = new Size(142, 52);
             btnthemhk.TabIndex = 10;
@@ -151,7 +277,7 @@ namespace WinFormsApp4
             // button6
             // 
             button6.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
-            button6.Location = new Point(46, 473);
+            button6.Location = new Point(39, 649);
             button6.Name = "button6";
             button6.Size = new Size(142, 52);
             button6.TabIndex = 9;
@@ -162,7 +288,7 @@ namespace WinFormsApp4
             // button4
             // 
             button4.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
-            button4.Location = new Point(46, 391);
+            button4.Location = new Point(39, 567);
             button4.Name = "button4";
             button4.Size = new Size(142, 52);
             button4.TabIndex = 8;
@@ -173,7 +299,7 @@ namespace WinFormsApp4
             // button3
             // 
             button3.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
-            button3.Location = new Point(46, 220);
+            button3.Location = new Point(39, 396);
             button3.Name = "button3";
             button3.Size = new Size(142, 52);
             button3.TabIndex = 5;
@@ -210,6 +336,7 @@ namespace WinFormsApp4
             panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             panel2.ResumeLayout(false);
+            panel2.PerformLayout();
             bordera.ResumeLayout(false);
             ResumeLayout(false);
         }
@@ -232,5 +359,15 @@ namespace WinFormsApp4
         private Button button4;
         private Button button6;
         private Button btnthemhk;
+        private Button btnredhk;
+        private Label userinfor;
+        private Label currentcredit;
+        private Label currentgpa;
+        private Label earnedcredits;
+        private Label label5;
+        private Label label4;
+        private Label label3;
+        private Label label6;
+        private Label gpacal;
     }
 }

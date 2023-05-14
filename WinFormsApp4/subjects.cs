@@ -24,6 +24,11 @@ namespace WinFormsApp4
         private int opentime;
         public int Opentime { get => opentime; set => opentime = value; }
 
+        private string mark;
+        public string Mark { get => mark; set => mark = value; }
+
+        private string marktext;
+        public string Marktext { get => marktext; set => marktext = value; }
 
         private string id;
         private string name;

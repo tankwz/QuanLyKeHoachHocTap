@@ -43,6 +43,7 @@ namespace WinFormsApp4
                         studentlist0[a].Name = subject[b].Name;
                         studentlist0[a].Credits = subject[b].Credits;
                         subject[b].Done = 1;
+                        subject[b].Mark = studentlist0[a].Mark;
                         //MessageBox.Show("here");
                     }
                 }

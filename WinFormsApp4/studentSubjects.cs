@@ -50,8 +50,8 @@ namespace WinFormsApp4
             Id= id;
             Credits = credits;
             Get = get;
-
         }
+
         public studentSubjects() { }
     }
 }

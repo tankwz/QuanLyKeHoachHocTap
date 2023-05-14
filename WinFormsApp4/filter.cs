@@ -32,7 +32,7 @@ namespace WinFormsApp4
             if (input == "Rút") return grade = "W";
             if (input == "Vắn") return grade = "F";
             if (input == null) return grade = "";
-            double mark = double.Parse(input.Replace(",", "."));
+            double mark = double.TryParse(input.Replace(",", "."), out double result) ? result : 0.0;
             switch (mark)
             {
                 case double n when (n >= 9.0):
@@ -267,10 +267,8 @@ namespace WinFormsApp4
                     {
                         string prerequisiteId = prerequisite.Trim();
                         //subjects prerequisiteSubject = subject.FirstOrDefault(s => s.Id == prerequisiteId);
-
                         if (prerequisiteId == thissj)
                             return yes = 0;
-
                     }
                 }
             }

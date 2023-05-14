@@ -44,7 +44,7 @@ namespace WinFormsApp4
                 this.Close();
                 form.Show();
             }
-            
+
         }
 
         private void btnBack_Click(object sender, EventArgs e)
@@ -65,6 +65,11 @@ namespace WinFormsApp4
                 textBox2.UseSystemPasswordChar = true;
                 textBox4.UseSystemPasswordChar = true;
             }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -16,23 +16,25 @@ namespace WinFormsApp4
         private subjects[] subject;
         int totalhk;
         Form form = new Form();
-        public ThemHocPhan(subjects[] subject, int totalhk, Form formkh)
+        int totalcre;
+        public ThemHocPhan(subjects[] subject, int totalhk, Form formkh, int totalcre)
         {
             this.totalhk = totalhk;
+            this.totalcre = totalcre;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.form = formkh;
             InitializeComponent();
             this.subject = subject;
             dataGridView1.Columns.Add(new DataGridViewCheckBoxColumn()
-            { HeaderText = "Select", DataPropertyName = "Selected", Name = "Selected" });
+            { HeaderText = "Select", DataPropertyName = "Selected", Name = "Selected", Width = 55 });
             dataGridView1.CellValueChanged += dataGridView1_CellValueChanged;
             dataGridView1.Columns.Add("Id", "Mã học phần");
             dataGridView1.Columns.Add("Name", "Tên học phần");
             dataGridView1.Columns.Add("Credits", "Tín chỉ");
             dataGridView1.Columns.Add("Prerequisite", "Tiên quyết");
             dataGridView1.Columns.Add("Groupz", "Nhóm");
-            dataGridView1.Columns.Add("Mandatory", "Bắt buộc");
-            dataGridView1.Columns.Add("Done", "Done");
+            // dataGridView1.Columns.Add("Mandatory", "Bắt buộc");
+            //dataGridView1.Columns.Add("Done", "Done");
             dataGridView1.Columns.Add("Recommend", "Học kỳ theo mẫu");
             dataGridView1.Columns.Add("Opentime", "Học kỳ mở");
             dataGridView1.Columns["Id"].DataPropertyName = "Id";
@@ -40,44 +42,67 @@ namespace WinFormsApp4
             dataGridView1.Columns["Credits"].DataPropertyName = "Credits";
             dataGridView1.Columns["Prerequisite"].DataPropertyName = "Prerequisite";
             dataGridView1.Columns["Groupz"].DataPropertyName = "Groupz";
-            dataGridView1.Columns["Mandatory"].DataPropertyName = "Mandatory";
-            dataGridView1.Columns["Done"].DataPropertyName = "Done";
+            // dataGridView1.Columns["Mandatory"].DataPropertyName = "Mandatory";
+            //dataGridView1.Columns["Done"].DataPropertyName = "Done";
             dataGridView1.Columns["Recommend"].DataPropertyName = "Recommend";
             dataGridView1.Columns["Opentime"].DataPropertyName = "Opentime";
-            dataGridView1.Columns["Id"].Width = 80;
-            dataGridView1.Columns["Name"].Width = 120;
+            dataGridView1.Columns["Id"].Width = 100;
+            dataGridView1.Columns["Name"].Width = 340;
             dataGridView1.Columns["Credits"].Width = 80;
             dataGridView1.Columns["Prerequisite"].Width = 120;
-            dataGridView1.Columns["Groupz"].Width = 120;
-            dataGridView1.Columns["Mandatory"].Width = 100;
-            dataGridView1.Columns["Done"].Width = 50;
-            dataGridView1.Columns["Recommend"].Width = 50;
-            dataGridView1.Columns["Opentime"].Width = 50;
-
+            dataGridView1.Columns["Groupz"].Width = 70;
+            //    dataGridView1.Columns["Mandatory"].Width = 80;
+            // dataGridView1.Columns["Done"].Width = 50;
+            dataGridView1.Columns["Recommend"].Width = 240;
+            dataGridView1.Columns["Opentime"].Width = 100;
+            currentCredits.Text = totalcre.ToString();
             //var filteredList2 = subject.Where(s => (s.Mandatory != "0") && (s.Done == 0) && (s.Mandatory >0)).OrderBy(s => s.Recommend).ToArray();
-
+            dataGridView1.AutoGenerateColumns = false;
             var filteredList2 = subject
     .Where(s => (s.Done == 0) && (s.Mandatory == "all" || (int.TryParse(s.Mandatory, out int mandatoryValue) && mandatoryValue > 0)))
     .OrderBy(s => s.Recommend)
     .ToArray();
 
+            //  ApplyCellFormatting(filteredList2, subject, totalhk);
+
+
 
             dataGridView1.DataSource = filteredList2;
             dataGridView1.BackgroundColor = Color.White;
             this.BackColor = Color.FromArgb(240, 244, 252);
+            dataGridView1.CellFormatting += DataGridView1_CellFormatting;
+            //  dataGridView1.CellFormatting += (sender, e) => dataGridView1_CellFormatting(sender, e, filteredList2);
 
 
-            dataGridView1.CellFormatting += (sender, e) =>
+        }
+        private void DataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            var dataGridView1 = (DataGridView)sender;
+            var selectedSubject = (subjects)dataGridView1.Rows[e.RowIndex].DataBoundItem;
+
+            if (selectedSubject != null)
             {
-
-                foreach (var sj in filteredList2)
+                if (e.ColumnIndex == dataGridView1.Columns["Opentime"].Index)
                 {
-                    if (string.IsNullOrEmpty(sj.Prerequisite))
-                        continue;
-                    var selectedSubject = sj;
+                    int opentime = (int)e.Value;
+                    string displayValue = GetOpentimeDisplay(opentime);
+                    e.Value = displayValue;
+                }
+                else if (e.ColumnIndex == dataGridView1.Columns["Recommend"].Index)
+                {
+                    int recommendValue = (int)e.Value;
+                    string displayValue = GetRecommendDisplay(recommendValue);
+                    e.Value = displayValue;
+                }
 
+                if (selectedSubject.Recommend < totalhk)
+                {
+                    dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Yellow;
+                }
+
+                if (!string.IsNullOrEmpty(selectedSubject.Prerequisite))
+                {
                     string[] prerequisites = selectedSubject.Prerequisite.Split(',');
-                    //MessageBox.Show("s");
                     foreach (string prerequisite in prerequisites)
                     {
                         if (!string.IsNullOrEmpty(prerequisite))
@@ -86,26 +111,144 @@ namespace WinFormsApp4
                             subjects prerequisiteSubject = subject.FirstOrDefault(s => s.Id == prerequisiteId);
                             if (prerequisiteSubject != null && (prerequisiteSubject.Done >= totalhk || prerequisiteSubject.Done == 0))
                             {
-                                foreach (DataGridViewRow row in dataGridView1.Rows)
+                                dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Gray;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else if ((selectedSubject.Opentime == 2 && totalhk % 3 == 0))
+                {
+                    dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGray;
+                }
+                else if (selectedSubject.Recommend == totalhk)
+                {
+                    dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightBlue;
+                }
+
+            }
+        }
+
+        /*
+        private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e, subjects[] filteredList)
+        {
+
+            var dataGridView1 = (DataGridView)sender;
+            if (e.ColumnIndex == dataGridView1.Columns["Opentime"].Index && e.RowIndex >= 0)
+            {
+                DataGridViewCell cell = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                if (cell.Value != null)
+                {
+                    int opentime = (int)cell.Value;
+                    string displayValue = GetOpentimeDisplay(opentime);
+                    e.Value = displayValue;
+                }
+            }
+            if (e.ColumnIndex == dataGridView1.Columns["Recommend"].Index && e.RowIndex >= 0)
+            {
+                DataGridViewCell cell = dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                if (cell.Value != null)
+                {
+                    int recommendValue = (int)cell.Value;
+                    string displayValue = GetRecommendDisplay(recommendValue);
+                    e.Value = displayValue;
+                }
+            }
+
+            foreach (var sj in filteredList)
+            {
+                var selectedSubject = sj;
+                //MessageBox.Show("s");
+                if ((selectedSubject.Opentime == 2 && totalhk % 3 == 0))
+                {
+                    foreach (DataGridViewRow row in dataGridView1.Rows)
+                    {
+                        if (dataGridView1.Rows[e.RowIndex].Cells["Id"].Value.ToString() == selectedSubject.Id)
+                        {
+                            // MessageBox.Show(sj.Id);
+                            dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Gray;
+                            //   row.DefaultCellStyle.BackColor = Color.Red;
+                            break;
+                        }
+                    }
+                }
+                if ((selectedSubject.Recommend == totalhk))
+                {
+                    foreach (DataGridViewRow row in dataGridView1.Rows)
+                    {
+                        if (dataGridView1.Rows[e.RowIndex].Cells["Id"].Value.ToString() == selectedSubject.Id)
+                        {
+                            // MessageBox.Show(sj.Id);
+                            dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightBlue;
+                            //   row.DefaultCellStyle.BackColor = Color.Red;
+                            break; // Exit the loop once the row is found
+                        }
+                    }
+                }
+                if (string.IsNullOrEmpty(sj.Prerequisite))
+                    continue;
+                //var selectedSubject = sj;
+
+                string[] prerequisites = selectedSubject.Prerequisite.Split(',');
+                //MessageBox.Show("s");
+                foreach (string prerequisite in prerequisites)
+                {
+                    if (!string.IsNullOrEmpty(prerequisite))
+                    {
+                        string prerequisiteId = prerequisite.Trim();
+                        subjects prerequisiteSubject = subject.FirstOrDefault(s => s.Id == prerequisiteId);
+                        if ((prerequisiteSubject != null && (prerequisiteSubject.Done >= totalhk || prerequisiteSubject.Done == 0)))
+                        {
+                            foreach (DataGridViewRow row in dataGridView1.Rows)
+                            {
+                                if (dataGridView1.Rows[e.RowIndex].Cells["Id"].Value.ToString() == sj.Id)
                                 {
-                                    if (dataGridView1.Rows[e.RowIndex].Cells["Id"].Value.ToString() == sj.Id)
-                                    {
-                                        // MessageBox.Show(sj.Id);
-                                        dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Red;
-                                        //   row.DefaultCellStyle.BackColor = Color.Red;
-                                        break; // Exit the loop once the row is found
-                                    }
+                                    // MessageBox.Show(sj.Id);
+                                    dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Red;
+                                    //   row.DefaultCellStyle.BackColor = Color.Red;
+                                    break; // Exit the loop once the row is found
                                 }
                             }
                         }
                     }
-
                 }
+            }
 
-            };
+            // Unsubscribe from the event after executing the code once
+            dataGridView1.CellFormatting -= (s, args) => dataGridView1_CellFormatting(s, args, filteredList);
+        //    dataGridView1.CellFormatting -= (s, args) => dataGridView1_CellFormatting(s, args, filteredList);
+        }
+        */
+        private Semester semester = new Semester();
+        private string GetRecommendDisplay(int recommendValue)
+        {
+            if (semester.Semesterk44ktmp.ContainsKey(recommendValue))
+            {
+                return semester.Semesterk44ktmp[recommendValue];
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+        private string GetOpentimeDisplay(int opentime)
+        {
+            switch (opentime)
+            {
+                case 0:
+                    return "Sắp sẵn";
+                case 1:
+                    return "III";
+                case 2:
+                    return "I, II";
+                case 3:
+                    return "I, II, III";
+                default:
+                    return string.Empty;
+            }
         }
         string[] unsat = new string[] { };
-        int totalcre = 0;
+        // int totalcre = 0;
         string checksub = "";
         string checksubmand = "";
 
@@ -127,17 +270,37 @@ namespace WinFormsApp4
                     {
                         MessageBox.Show("Môn học " + selectedSubject.Name + " không mở vào học kỳ hè");
                         chk.Value = false;
-                      //  return;
+                        //  return;
                     }
 
-                    if (totalcre <= 20 && totalhk % 3 != 0)
+                    /* if (totalcre <= 20 && totalhk % 3 != 0)
+                     {
+                         totalcre += selectedSubject.Credits;
+
+                     }*/
+                    if (totalhk % 3 != 0)
                     {
-                        totalcre += selectedSubject.Credits;
+                        if (totalhk < 13 && totalcre <= 20)
+                        {
+                            totalcre += selectedSubject.Credits;
+                        }
+                        else if (totalhk >= 13 && totalcre <= 25)
+                        {
+                            totalcre += selectedSubject.Credits;
+                        }
                     }
-                    if (totalcre > 20 && totalhk % 3 != 0)
+                    if (totalhk % 3 != 0)
                     {
-                        MessageBox.Show("Học kỳ không được vượt quá 20 tín chỉ");
-                        chk.Value = false;
+                        if (totalhk < 13 && totalcre > 20)
+                        {
+                            MessageBox.Show("Học kỳ không được vượt quá 20 tín chỉ");
+                            chk.Value = false;
+                        }
+                        else if (totalhk >= 13 && totalcre > 25)
+                        {
+                            MessageBox.Show("Học kỳ không được vượt quá 25 tín chỉ");
+                            chk.Value = false;
+                        }
                     }
                     if (totalcre <= 8 && totalhk % 3 == 0)
                     {
@@ -182,10 +345,10 @@ namespace WinFormsApp4
                                     {
                                         koadd = true;
                                         chk.Value = false;
-                                     //   koadd = false;
-                                        MessageBox.Show(checksubmand);
+                                        //   koadd = false;
+                                        //   MessageBox.Show(checksubmand);
                                         MessageBox.Show("Học phần nằm cùng nhóm " + checkedSubject.Id.ToString() + " - " + checkedSubject.Name.ToString() + "đã được chọn", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        
+
                                     }
                                 }
                             }
@@ -199,27 +362,25 @@ namespace WinFormsApp4
                                     string checkedLastTwo = checkedSubject.Groupz.Substring(2, 2);
                                     if (lastTwo != checkedLastTwo)
                                     {
-                                        
                                         checkedSubject.Mandatory = "0";
-
                                     }
-                                    
+
                                 }
 
                             }
-                   /*     if (!string.IsNullOrEmpty(lastTwo))
-                            foreach (DataGridViewRow row in dataGridView1.Rows)
-                            {
+                        /*     if (!string.IsNullOrEmpty(lastTwo))
+                                 foreach (DataGridViewRow row in dataGridView1.Rows)
+                                 {
 
-                                subjects checkedSubject = row.DataBoundItem as subjects;
-                                if (checkedSubject != null && checkedSubject.Id == checksub )
-                                {
+                                     subjects checkedSubject = row.DataBoundItem as subjects;
+                                     if (checkedSubject != null && checkedSubject.Id == checksub )
+                                     {
 
-                                    checkedSubject.Mandatory = checksubmand;
-                                }
+                                         checkedSubject.Mandatory = checksubmand;
+                                     }
 
-                            }
-                        */
+                                 }
+                             */
 
                         bool showMessage = true;
 
@@ -238,7 +399,7 @@ namespace WinFormsApp4
                                         chk.Value = false;
 
                                         MessageBox.Show("Không thể thêm nữa");
-                                        
+
                                     }
                                     checkedSubject.Mandatory = (int.Parse(checkedSubject.Mandatory) - selectedSubject.Credits).ToString();
 
@@ -278,7 +439,7 @@ namespace WinFormsApp4
                         chk.Value = false;
                         MessageBox.Show(string.Format("Môn học {0} - {1} chưa đáp ứng điều kiện tiên quyết:\n{2}",
                                     selectedSubject.Id, selectedSubject.Name, unsatisfiedPrerequisites));
-                     //   return;
+                        //   return;
                     }
                 }
                 else
@@ -298,25 +459,7 @@ namespace WinFormsApp4
 
                         // Iterate over the DataGridView rows
                         //////////////////////////
-                        if (!string.IsNullOrEmpty(lastTwo) && !koadd)
-                            foreach (DataGridViewRow row in dataGridView1.Rows)
-                            {
-                                DataGridViewCheckBoxCell checkBoxCell = row.Cells["Selected"] as DataGridViewCheckBoxCell;
-
-                                // Compare the group of the checked row with the group of the clicked subject
-                                subjects checkedSubject = row.DataBoundItem as subjects;
-                                if (checkedSubject != null && checkedSubject.Groupz.StartsWith(firstTwo))
-                                {
-                                    string checkedLastTwo = checkedSubject.Groupz.Substring(2, 2);
-                                    if (lastTwo != checkedLastTwo)
-                                    {
-                                            //   MessageBox.Show(selectedSubject.Name);
-                                       checkedSubject.Mandatory = selectedSubject.Mandatory;
-
-                                    }
-                                }
-                            }
-                        if (!string.IsNullOrEmpty(lastTwo) && (bool)chk.Value)
+                        if (!string.IsNullOrEmpty(lastTwo))
                             foreach (DataGridViewRow row in dataGridView1.Rows)
                             {
                                 DataGridViewCheckBoxCell checkBoxCell = row.Cells["Selected"] as DataGridViewCheckBoxCell;
@@ -329,11 +472,14 @@ namespace WinFormsApp4
                                     if (lastTwo != checkedLastTwo)
                                     {
                                         //   MessageBox.Show(selectedSubject.Name);
-                                        checkedSubject.Mandatory = selectedSubject.Mandatory;
+                                        if (int.Parse(selectedSubject.Mandatory) > 0)
+                                            checkedSubject.Mandatory = selectedSubject.Mandatory;
 
                                     }
                                 }
                             }
+
+                        //    koadd = false;
 
                         /////////////////////////
                         if (string.IsNullOrEmpty(lastTwo))
@@ -344,22 +490,18 @@ namespace WinFormsApp4
                                 subjects checkedSubject = row.DataBoundItem as subjects;
                                 if (checkedSubject != null && checkedSubject.Groupz.StartsWith(firstTwo))
                                 {
-                                    string checkedLastTwo = checkedSubject.Groupz.Substring(2, 2);
+                                    //string checkedLastTwo = checkedSubject.Groupz.Substring(2, 2);
                                     checkedSubject.Mandatory = (int.Parse(checkedSubject.Mandatory) + selectedSubject.Credits).ToString();
-
                                 }
 
                             }
                     }
-                 //  checksub = "";
-                 //  checksubmand = "";
+                    //  checksub = "";
+                    //  checksubmand = "";
 
                 }
             }
-
-
             currentCredits.Text = totalcre.ToString();
-
         }
         /*
         private void UncheckRowsWithUnsatisfiedPrerequisites(string[] unsat)

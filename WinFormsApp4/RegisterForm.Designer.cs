@@ -142,6 +142,7 @@
             pictureBox1.Size = new Size(100, 100);
             pictureBox1.TabIndex = 17;
             pictureBox1.TabStop = false;
+            pictureBox1.Click += pictureBox1_Click;
             // 
             // chkShowpas
             // 
